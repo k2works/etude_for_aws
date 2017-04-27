@@ -23,6 +23,8 @@ AWS構築のための練習プログラム集
 1. [運用](#運用)
 
 ## 構築
+[Using the AWS SDK for Ruby REPL](./ops/build_aws_sdk_repl.md)
+
 **[⬆ back to top](#構成)**
 
 ## 配置
