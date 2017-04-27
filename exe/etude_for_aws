@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+
+require "etude_for_aws"
