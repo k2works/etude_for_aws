@@ -10,7 +10,7 @@ class Vpc
         secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
         region: ENV['AWS_DEFAULT_REGION']
     )
-    file = Dir.pwd + '/lib/etude_for_aws/vpc/vpc-1az-1subnet-pub.template'
+    file = Dir.pwd + '/lib/etude_for_aws/vpc/cfm_templates/vpc-1az-1subnet-pub.template'
     template = File.read(file)
     cfm = Aws::CloudFormation::Client.new
     stack_names = []
@@ -39,8 +39,6 @@ class Vpc
         secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
         region: ENV['AWS_DEFAULT_REGION']
     )
-    file = Dir.pwd + '/lib/etude_for_aws/vpc/vpc-1az-1subnet-pub.template'
-    template = File.read(file)
     cfm = Aws::CloudFormation::Client.new
     stack_names = []
     cfm.describe_stacks.stacks.each do |stack|
