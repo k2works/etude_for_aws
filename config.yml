@@ -1,0 +1,12 @@
+DEV:
+  VPC:
+    STACK_NAME: 'VPCtestStack'
+    TEMPLATE_PATH: '/lib/etude_for_aws/vpc/cfm_templates/'
+    TEMPLATE_FILE_TYPE_01: 'vpc-1az-1subnet-pub.template'
+    TEMPLATE_FILE_TYPE_02: 'vpc-1az-2subnet-pub.template'
+    TEMPLATE_FILE_TYPE_03: 'vpc-1az-2subnet-pub-pri.template'
+    TEMPLATE_FILE_TYPE_04: 'vpc-2az-2subnet-pri.template'
+    TEMPLATE_FILE_TYPE_05: 'vpc-2az-2subnet-pub.template'
+    TEMPLATE_FILE_TYPE_06: 'vpc-2az-2subnet-pub-pri.template'
+    TEMPLATE_FILE_TYPE_07: 'vpc-2az-4subnet-pub-pri.template'
+    TAG_VALUE: 'test'

@@ -1,5 +1,6 @@
 require 'aws-sdk'
 require 'dotenv'
+require 'yaml'
 
 class Vpc
   attr_reader :config
@@ -10,8 +11,7 @@ class Vpc
   end
 
   def create
-    stack_names = collect_stack_name
-    unless stack_names.include?(@config.stack_name)
+    unless collect_stack_name.include?(@config.stack_name)
       resp = @cfm.create_stack({
                                   stack_name: @config.stack_name,
                                   template_body: @config.template,
@@ -27,13 +27,17 @@ class Vpc
   end
 
   def destroy
-    stack_names = collect_stack_name
-    if stack_names.include?(@config.stack_name)
+    if collect_stack_name.include?(@config.stack_name)
       resp = @cfm.delete_stack({
                                   stack_name: @config.stack_name,
                               })
       @config.stack_id = resp.to_s
     end
+  end
+
+  protected
+  def get_template_full_path(template_file)
+    Dir.pwd + @config.template_path + template_file
   end
 
   private
@@ -49,17 +53,14 @@ end
 class OneAzOnePublicSubnetVpc < Vpc
   def initialize
     super
-    @config.stack_name = 'VPCtestStack'
-    template_path = '/lib/etude_for_aws/vpc/cfm_templates/'
-    template_file = 'vpc-1az-1subnet-pub.template'
-    file = Dir.pwd + template_path + template_file
+    template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_01']
+    file = get_template_full_path(template_file)
     @config.template = File.read(file)
-    @config.stack_tag_value = 'test'
   end
 end
 
 class Configuration
-  attr_accessor :stack_name,:template,:stack_tag_value,:stack_id
+  attr_accessor :stack_name,:template,:stack_tag_value,:stack_id,:yaml,:template_path
 
   def initialize
     Dotenv.load
@@ -68,5 +69,10 @@ class Configuration
         secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
         region: ENV['AWS_DEFAULT_REGION']
     )
+
+    @yaml = YAML.load_file('config.yml')
+    @stack_name = @yaml['DEV']['VPC']['STACK_NAME']
+    @stack_tag_value = @yaml['DEV']['VPC']['TAG_VALUE']
+    @template_path = @yaml['DEV']['VPC']['TEMPLATE_PATH']
   end
 end
