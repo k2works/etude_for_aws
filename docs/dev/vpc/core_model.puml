@@ -1,0 +1,27 @@
+@startuml
+
+package Aws {
+  class CloudFormation
+}
+
+Interface CertificationHelper
+
+package VPC {
+  class Vpc {
+    create()
+    destroy()
+  }
+  CertificationHelper <|-- Configuration
+  Vpc o-u- CloudFormation
+  Vpc o-l- Configuration
+  Vpc <|-- NullVpc
+  Vpc <|-- OneAzOnePublicSubnetVpc
+  Vpc <|-- OneAzTwoPublicAndPrivateSubnetVpc
+  Vpc <|-- OneAzTwoPublicSubnetVpc
+  Vpc <|-- TwoAzOnePublicSubnetAndPrivateSubnetVpc
+  Vpc <|-- TwoAzTwoPrivateSubnetVpc
+  Vpc <|-- TwoAzTwoPublicSubnetAndPrivateSubnetVpc
+  Vpc <|-- TwoAzTwoPublicSubnetVpc
+}
+
+@enduml

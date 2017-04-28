@@ -31,9 +31,13 @@ AWS構築のための練習プログラム集
 **[⬆ back to top](#構成)**
 
 ## 開発
+[VPC](./dev/vpc/vpc.md)
+
 **[⬆ back to top](#構成)**
 
 ## 運用
 **[⬆ back to top](#運用)**
 
 # 参照 #
++ [AWS SDK for Ruby - Version 2](http://docs.aws.amazon.com/sdkforruby/api/index.html)
++ [RSpec Expectations 3.5](http://www.relishapp.com/rspec/rspec-expectations/v/3-5/docs)
