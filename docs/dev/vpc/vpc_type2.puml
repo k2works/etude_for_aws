@@ -1,0 +1,23 @@
+@startuml
+cloud Internet
+frame "AWS" {
+frame "VPC" {
+    Internet - [InternetGateway]
+    [InternetGateway] -- [RouteTable]
+    [RouteTable] -- PublicSubnet1
+    [RouteTable] -- PublicSubnet2
+    frame "AZ1" {
+      frame "PublicSubnet1" {
+      }
+      frame "PublicSubnet2" {
+      }
+    }
+}
+}
+note right of PublicSubnet1
+  10.0.0.0/24
+end note
+note right of PublicSubnet2
+  10.0.1.0/24
+end note
+@enduml
