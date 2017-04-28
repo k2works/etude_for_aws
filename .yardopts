@@ -1,4 +1,5 @@
 -
 docs/README.md
 docs/dev/vpc/vpc.md
+docs/dev/ec2/ec2.md
 docs/ops/build_aws_sdk_repl.md

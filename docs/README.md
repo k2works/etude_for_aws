@@ -31,7 +31,8 @@ AWS構築のための練習プログラム集
 **[⬆ back to top](#構成)**
 
 ## 開発
-[VPC](./dev/vpc/vpc.md)
+### [VPC](./dev/vpc/vpc.md)
+### [EC2](./dev/ec2/ec2.md)
 
 **[⬆ back to top](#構成)**
 
