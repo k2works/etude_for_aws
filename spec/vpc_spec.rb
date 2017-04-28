@@ -121,14 +121,14 @@ RSpec.describe VPC::Vpc do
   context 'Exception' do
     let(:vpc) { create_vpc_instance(:NOT_DEFINE) }
     describe '#create' do
-      it 'create vpc using cloud formation' do
+      it 'do noting' do
         vpc.create
         expect(vpc.config.stack_id).to be_nil
       end
     end
 
     describe '#destroy' do
-      it 'destroy vpc using cloud formation' do
+      it 'do nothing' do
         vpc.destroy
         expect(vpc.config.stack_id).to be_nil
       end
