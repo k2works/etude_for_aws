@@ -127,6 +127,23 @@ RSpec.describe Vpc do
       end
     end
   end
+
+  context 'Exception' do
+    let(:vpc) { create_vpc_instance(:NOT_DEFINE) }
+    describe '#create' do
+      it 'create vpc using cloud formation' do
+        vpc.create
+        expect(vpc.config.stack_id).to be_nil
+      end
+    end
+
+    describe '#destroy' do
+      it 'destroy vpc using cloud formation' do
+        vpc.destroy
+        expect(vpc.config.stack_id).to be_nil
+      end
+    end
+  end
 end
 
 def create_vpc_instance(type)
@@ -146,6 +163,6 @@ def create_vpc_instance(type)
     when :TWO_AZ_TWO_PUB_PRI
       return TwoAzTwoPublicSubnetAndPrivateSubnetVpc.new
     else
-      raise
+      return NullVpc.new
   end
 end
