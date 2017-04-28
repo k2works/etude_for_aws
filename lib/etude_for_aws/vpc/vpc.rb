@@ -5,6 +5,16 @@ require 'yaml'
 class Vpc
   attr_reader :config
 
+  TYPE = {
+      1 => :ONE_AZ_ONE_PUB,
+      2 => :ONE_AZ_TWO_PUB,
+      3 => :ONE_AZ_ONE_PUB_PRI,
+      4 => :TWO_AZ_TWO_PRI,
+      5 => :TWO_AZ_TWO_PUB,
+      6 => :TWO_AZ_ONE_PUB_RPI,
+      7 => :TWO_AZ_TWO_PUB_PRI
+  }
+
   def initialize
     @config = Configuration.new
     @cfm = Aws::CloudFormation::Client.new
@@ -15,6 +25,7 @@ class Vpc
       resp = @cfm.create_stack({
                                   stack_name: @config.stack_name,
                                   template_body: @config.template,
+                                  parameters: @config.parameters,
                                   tags: [
                                       {
                                           key: 'Name',
@@ -56,11 +67,128 @@ class OneAzOnePublicSubnetVpc < Vpc
     template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_01']
     file = get_template_full_path(template_file)
     @config.template = File.read(file)
+    @config.parameters = []
+  end
+end
+
+class OneAzTwoPublicSubnetVpc < Vpc
+  def initialize
+    super
+    template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_02']
+    file = get_template_full_path(template_file)
+    @config.template = File.read(file)
+    @config.parameters = [
+        {
+            parameter_key: "AZ1",
+            parameter_value: @config.azs[0],
+            use_previous_value: false,
+        },
+    ]
+  end
+end
+
+class OneAzTwoPublicAndPrivateSubnetVpc < Vpc
+  def initialize
+    super
+    template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_03']
+    file = get_template_full_path(template_file)
+    @config.template = File.read(file)
+    @config.parameters = [
+        {
+            parameter_key: "AZ1",
+            parameter_value: @config.azs[0],
+            use_previous_value: false,
+        },
+    ]
+  end
+end
+
+class TwoAzTwoPrivateSubnetVpc < Vpc
+  def initialize
+    super
+    template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_04']
+    file = get_template_full_path(template_file)
+    @config.template = File.read(file)
+    @config.parameters = [
+        {
+            parameter_key: "AZ1",
+            parameter_value: @config.azs[0],
+            use_previous_value: false,
+        },
+        {
+            parameter_key: "AZ2",
+            parameter_value: @config.azs[1],
+            use_previous_value: false,
+        },
+    ]
+  end
+end
+
+class TwoAzTwoPublicSubnetVpc < Vpc
+  def initialize
+    super
+    template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_05']
+    file = get_template_full_path(template_file)
+    @config.template = File.read(file)
+    @config.parameters = [
+        {
+            parameter_key: "AZ1",
+            parameter_value: @config.azs[0],
+            use_previous_value: false,
+        },
+        {
+            parameter_key: "AZ2",
+            parameter_value: @config.azs[1],
+            use_previous_value: false,
+        },
+    ]
+  end
+end
+
+class TwoAzOnePublicSubnetAndPrivateSubnetVpc < Vpc
+  def initialize
+    super
+    template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_06']
+    file = get_template_full_path(template_file)
+    @config.template = File.read(file)
+    @config.parameters = [
+        {
+            parameter_key: "AZ1",
+            parameter_value: @config.azs[0],
+            use_previous_value: false,
+        },
+        {
+            parameter_key: "AZ2",
+            parameter_value: @config.azs[1],
+            use_previous_value: false,
+        },
+    ]
+  end
+end
+
+class TwoAzTwoPublicSubnetAndPrivateSubnetVpc < Vpc
+  def initialize
+    super
+    template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_07']
+    file = get_template_full_path(template_file)
+    @config.template = File.read(file)
+    @config.parameters = [
+        {
+            parameter_key: "AZ1",
+            parameter_value: @config.azs[0],
+            use_previous_value: false,
+        },
+        {
+            parameter_key: "AZ2",
+            parameter_value: @config.azs[1],
+            use_previous_value: false,
+        },
+    ]
   end
 end
 
 class Configuration
-  attr_accessor :stack_name,:template,:stack_tag_value,:stack_id,:yaml,:template_path
+  attr_accessor :stack_name,:template,:stack_tag_value,:stack_id,:yaml,:template_path,:parameters,:azs
 
   def initialize
     Dotenv.load
@@ -74,5 +202,9 @@ class Configuration
     @stack_name = @yaml['DEV']['VPC']['STACK_NAME']
     @stack_tag_value = @yaml['DEV']['VPC']['TAG_VALUE']
     @template_path = @yaml['DEV']['VPC']['TEMPLATE_PATH']
+    @azs = []
+    @azs << @yaml['DEV']['VPC']['TEMPLATE_PARAMS_AZ1']
+    @azs << @yaml['DEV']['VPC']['TEMPLATE_PARAMS_AZ2']
+    @azs << @yaml['DEV']['VPC']['TEMPLATE_PARAMS_AZ3']
   end
 end

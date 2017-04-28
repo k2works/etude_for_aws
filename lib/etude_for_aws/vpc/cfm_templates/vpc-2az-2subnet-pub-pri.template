@@ -6,14 +6,14 @@
       "Default" : "ap-northeast-1a",
       "Description" : "AZ",
       "Type" : "String",
-      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c" ],
+      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c" ],
       "ConstraintDescription" : "must select a valid availability zone."
     },
     "AZ2" : {
       "Default" : "ap-northeast-1c",
       "Description" : "AZ",
       "Type" : "String",
-      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c" ],
+      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c" ],
       "ConstraintDescription" : "must select a valid availability zone."
     }
   },
@@ -25,7 +25,7 @@
       "Public-1a": {
         "CIDR": "10.0.0.0/24"
       },
-      "Public-1c": {
+      "Private-1c": {
         "CIDR": "10.0.1.0/24"
       }
     }
@@ -220,22 +220,6 @@
         }
       }
     },
-    "PublicSubnetRouteTableAssociation1c": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "SubnetId": {
-          "Ref": "PublicSubnet1c"
-        },
-        "RouteTableId": {
-          "Ref": "PublicRouteTable"
-        }
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "ff1a00b2-0c71-4500-a421-08255279d2f0"
-        }
-      }
-    },
     "PublicNetworkAcl": {
       "Type": "AWS::EC2::NetworkAcl",
       "Properties": {
@@ -386,22 +370,6 @@
           "id": "de86ddc8-8415-41a5-a905-b1bda5ba3fed"
         }
       }
-    },
-    "PublicSubnetNetworkAclAssociation1c": {
-      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
-      "Properties": {
-        "SubnetId": {
-          "Ref": "PublicSubnet1c"
-        },
-        "NetworkAclId": {
-          "Ref": "PublicNetworkAcl"
-        }
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "353e5d2f-7968-4636-a916-b4d1305ad23f"
-        }
-      }
     }
   },
   "Outputs": {
@@ -413,9 +381,9 @@
       "Value" : { "Ref" : "PublicSubnet1a" },
       "Description" : "PublicSubnet1"
     },
-    "SUBNETPUB2" : {
-      "Value" : { "Ref" : "PublicSubnet1c" },
-      "Description" : "PublicSubnet2 "
+    "SUBNETRRI1" : {
+      "Value" : { "Ref" : "PrivateSubnet1c" },
+      "Description" : "PrivateSubnet1"
     }
   },
   "Metadata": {

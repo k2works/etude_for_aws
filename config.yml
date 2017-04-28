@@ -9,4 +9,7 @@ DEV:
     TEMPLATE_FILE_TYPE_05: 'vpc-2az-2subnet-pub.template'
     TEMPLATE_FILE_TYPE_06: 'vpc-2az-2subnet-pub-pri.template'
     TEMPLATE_FILE_TYPE_07: 'vpc-2az-4subnet-pub-pri.template'
+    TEMPLATE_PARAMS_AZ1: 'us-west-2a'
+    TEMPLATE_PARAMS_AZ2: 'us-west-2b'
+    TEMPLATE_PARAMS_AZ3: 'us-west-2c'
     TAG_VALUE: 'test'

@@ -6,14 +6,14 @@
       "Default" : "ap-northeast-1a",
       "Description" : "AZ",
       "Type" : "String",
-      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c" ],
+      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c" ],
       "ConstraintDescription" : "must select a valid availability zone."
     },
     "AZ2" : {
       "Default" : "ap-northeast-1c",
       "Description" : "AZ",
       "Type" : "String",
-      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c" ],
+      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c" ],
       "ConstraintDescription" : "must select a valid availability zone."
     }
   },
