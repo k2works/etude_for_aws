@@ -4,8 +4,4 @@ RSpec.describe EtudeForAws do
   it "has a version number" do
     expect(EtudeForAws::VERSION).not_to be nil
   end
-
-  it "does something useful" do
-    expect(false).to eq(true)
-  end
 end

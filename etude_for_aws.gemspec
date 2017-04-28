@@ -34,4 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "yard", "~> 0.8"
   spec.add_development_dependency "redcarpet", "~> 3.4"
+  spec.add_development_dependency "aws-sdk", "~> 2.9"
+  spec.add_development_dependency "dotenv"
+  spec.add_development_dependency "pry", "~> 0.10.4"
 end
