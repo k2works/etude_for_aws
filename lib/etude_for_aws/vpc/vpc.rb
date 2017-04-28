@@ -43,6 +43,13 @@ class Vpc
                                   stack_name: @config.stack_name,
                               })
       @config.stack_id = resp.to_s
+      @config.vpc_id = nil
+    end
+  end
+
+  def set_vpc_id
+    if collect_stack_name.include?(@config.stack_name)
+      @config.vpc_id = get_vpc_id
     end
   end
 
@@ -58,6 +65,10 @@ class Vpc
       stack_names << stack.stack_name
     end
     stack_names
+  end
+
+  def get_vpc_id
+    @cfm.describe_stack_resource({stack_name: @config.stack_name, logical_resource_id: 'VPC'}).stack_resource_detail.physical_resource_id
   end
 end
 
@@ -188,7 +199,7 @@ class TwoAzTwoPublicSubnetAndPrivateSubnetVpc < Vpc
 end
 
 class Configuration
-  attr_accessor :stack_name,:template,:stack_tag_value,:stack_id,:yaml,:template_path,:parameters,:azs
+  attr_accessor :stack_name,:template,:stack_tag_value,:stack_id,:yaml,:template_path,:parameters,:azs,:vpc_id
 
   def initialize
     Dotenv.load

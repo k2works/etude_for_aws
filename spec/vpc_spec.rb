@@ -10,10 +10,18 @@ RSpec.describe Vpc do
       end
     end
 
+    describe '#set_vpc_id' do
+      it 'has vpc id' do
+        vpc.set_vpc_id
+        expect(vpc.config.vpc_id).not_to be_nil
+      end
+    end
+
     describe '#destroy' do
       it 'destroy vpc using cloud formation' do
         vpc.destroy
         expect(vpc.config.stack_id).to eq('Aws::EmptyStructure')
+        expect(vpc.config.vpc_id).to be_nil
       end
     end
   end
