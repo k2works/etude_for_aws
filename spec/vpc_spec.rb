@@ -14,6 +14,7 @@ RSpec.describe VPC::Vpc do
     describe '#set_vpc_id' do
       it 'has vpc id' do
         if EXECUTE
+          sleep(5)
           vpc.set_vpc_id
           expect(vpc.config.vpc_id).not_to be_nil
         end

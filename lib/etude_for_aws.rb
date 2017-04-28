@@ -1,4 +1,5 @@
 require 'etude_for_aws/version'
+require 'etude_for_aws/helpers/certification_helper'
 require 'etude_for_aws/vpc/vpc'
 require 'etude_for_aws/vpc/configuration'
 require 'etude_for_aws/vpc/null_vpc'

@@ -1,8 +1,9 @@
-require 'dotenv'
 require 'yaml'
 
 module VPC
   class Configuration
+    include CertificationHelper
+
     attr_accessor :stack_name,
                   :template,
                   :stack_tag_value,
@@ -14,13 +15,7 @@ module VPC
                   :vpc_id
 
     def initialize
-      Dotenv.load
-      Aws.config.update(
-          access_key_id: ENV['AWS_ACCESS_KEY_ID'],
-          secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
-          region: ENV['AWS_DEFAULT_REGION']
-      )
-
+      aws_certificate
       @yaml = YAML.load_file('config.yml')
       @stack_name = @yaml['DEV']['VPC']['STACK_NAME']
       @stack_tag_value = @yaml['DEV']['VPC']['TAG_VALUE']
