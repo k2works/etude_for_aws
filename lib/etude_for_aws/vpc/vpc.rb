@@ -33,6 +33,7 @@ module VPC
                                          },
                                      ],
                                  })
+        @cfm.wait_until(:stack_create_complete, {stack_name: @config.stack_name})
         @config.stack_id = resp.stack_id
       end
     end
@@ -42,6 +43,7 @@ module VPC
         resp = @cfm.delete_stack({
                                      stack_name: @config.stack_name,
                                  })
+        @cfm.wait_until(:stack_delete_complete, {stack_name: @config.stack_name})
         @config.stack_id = resp.to_s
         @config.vpc_id = nil
       end
