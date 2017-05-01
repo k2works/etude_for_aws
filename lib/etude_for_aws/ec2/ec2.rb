@@ -69,55 +69,14 @@ module EC2
       client = Aws::EC2::Client.new(region: ENV['AWS_DEFAULT_REGION'])
       ec2 = Aws::EC2::Resource.new(client: client)
 
-      # Terminating an Instance
       tag_name_value = 'MyGroovyInstance'
-      instance_ids = []
-      resp = client.describe_instances(filters:[{ name: "tag:Name", values: [tag_name_value] }])
-      resp.reservations.each do |reservation|
-        reservation.instances.each do |instance|
-          instance_ids << instance.instance_id
-        end
-      end
-      instance_ids.each do |instance_id|
-        i = ec2.instance(instance_id)
-
-        if i.exists?
-          case i.state.code
-            when 48  # terminated
-              puts "#{instance_id} is already terminated"
-            else
-              i.terminate
-          end
-        end
-
-        # Wait for the instance to be created, running, and passed status checks
-        ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]})
-      end
+      terminate_ec2_instance(client, ec2, tag_name_value)
 
       group_name = 'MyGroovySecurityGroup'
-      group_id = nil
-      ec2.security_groups.each do |sg|
-        if sg.group_name == group_name
-          group_id = sg.group_id
-        end
-      end
-      unless group_id.nil?
-        resp = client.delete_security_group({
-                                                group_id: group_id,
-                                            })
-        resp
-      end
+      delete_security_group(client, ec2, group_name)
 
       key_pair_name = "my-key-pair"
-
-      # Delete the key pair.
-      client.delete_key_pair({
-                              key_name: key_pair_name
-                          })
-
-      path = Dir.pwd + '/lib/etude_for_aws/ec2/'
-      pem_file = path + "#{key_pair_name}.pem"
-      FileUtils.rm(pem_file)
+      delete_key_pair(client, key_pair_name)
     end
 
     private
@@ -187,13 +146,60 @@ module EC2
                                           ],
                                       })
 
-      # Wait for the instance to be created, running, and passed status checks
       ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance[0].id]})
 
-      # Name the instance 'MyGroovyInstance' and give it the Group tag 'MyGroovyGroup'
       instance.create_tags({tags: instance_tags})
 
       instance
+    end
+
+    def self.delete_key_pair(client, key_pair_name)
+      client.delete_key_pair({
+                                 key_name: key_pair_name
+                             })
+
+      path = Dir.pwd + '/lib/etude_for_aws/ec2/'
+      pem_file = path + "#{key_pair_name}.pem"
+      FileUtils.rm(pem_file)
+    end
+
+    def self.terminate_ec2_instance(client, ec2, tag_name_value)
+      instance_ids = []
+      resp = client.describe_instances(filters: [{name: "tag:Name", values: [tag_name_value]}])
+      resp.reservations.each do |reservation|
+        reservation.instances.each do |instance|
+          instance_ids << instance.instance_id
+        end
+      end
+      instance_ids.each do |instance_id|
+        i = ec2.instance(instance_id)
+
+        if i.exists?
+          case i.state.code
+            when 48 # terminated
+              puts "#{instance_id} is already terminated"
+            else
+              i.terminate
+          end
+        end
+
+        ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]})
+      end
+    end
+
+    def self.delete_security_group(client, ec2, group_name)
+      group_id = nil
+      ec2.security_groups.each do |sg|
+        if sg.group_name == group_name
+          group_id = sg.group_id
+        end
+      end
+      unless group_id.nil?
+        resp = client.delete_security_group({
+                                                group_id: group_id,
+                                            })
+        resp
+      end
     end
   end
 end
