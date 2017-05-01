@@ -17,6 +17,7 @@ module VPC
     def initialize
       @config = Configuration.new
       @cfm = Aws::CloudFormation::Client.new
+      set_vpc_id
     end
 
     def create

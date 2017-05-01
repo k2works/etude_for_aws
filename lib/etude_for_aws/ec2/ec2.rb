@@ -7,23 +7,20 @@ module EC2
   class Configuration
     include CertificationHelper
 
+    attr_accessor :vpc_id,
+                  :subnet_id,
+                  :az
+
     attr_reader :client,
                 :ec2,
-                :vpc_id,
-                :subnet_id,
-                :az,
                 :yaml
 
     def initialize
       aws_certificate
 
       @yaml = YAML.load_file('config.yml')
-
       @client = Aws::EC2::Client.new
       @ec2 = Aws::EC2::Resource.new(client: client)
-      @vpc_id = 'vpc-4dc3f22a'
-      @subnet_id = 'subnet-cfd598a8'
-      @az = 'us-west-2b'
     end
   end
 
@@ -219,8 +216,12 @@ module EC2
   end
 
   class Ec2
-    def initialize
+    def initialize(vpc)
       @config = Configuration.new
+      @config.vpc_id = vpc.config.vpc_id
+      info = vpc.get_subnet_info
+      @config.subnet_id = info[:subnet_id]
+      @config.az = info[:az]
       @security_group = SecurityGroup.new(@config)
       @key_pair = KeyPair.new(@config)
       @ec2_instance = Ec2Instance.new(@config)
