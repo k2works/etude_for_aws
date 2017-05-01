@@ -10,31 +10,27 @@ module EC2
     attr_reader :client,
                 :ec2,
                 :vpc_id,
-                :security_group,
-                :authorize_egress,
-                :authorize_ingress,
-                :key_pair_name,
-                :pem_file,
-                :encoded_script,
-                :image_id,
                 :subnet_id,
-                :az,
-                :instance_type,
-                :min_count,
-                :max_count,
-                :instance_tags,
-                :tag_name_value
-
-    attr_accessor :security_group_id,
-                  :instances
+                :az
 
     def initialize
       aws_certificate
       @client = Aws::EC2::Client.new
       @ec2 = Aws::EC2::Resource.new(client: client)
+      @vpc_id = 'vpc-4dc3f22a'
+      @subnet_id = 'subnet-cfd598a8'
+      @az = 'us-west-2b'
+    end
+  end
+
+  class SecurityGroup
+    attr_accessor :security_group_id
+
+    def initialize(config)
+      @config = config
       group_name = 'MyGroovySecurityGroup'
       description = 'Security group for MyGroovyInstance'
-      @vpc_id = 'vpc-4dc3f22a'
+      vpc_id = @config.vpc_id
       @security_group = {
           group_name: group_name,
           description: description,
@@ -68,29 +64,158 @@ module EC2
               },
           ],
       }
+    end
 
+    def create
+      sg_name = []
+      @config.ec2.security_groups.each do |sg|
+        sg_name << sg.group_name
+      end
+      unless sg_name.include?(@security_group[:group_name])
+        sg = @config.ec2.create_security_group(@security_group)
+
+        sg.authorize_egress(@authorize_egress)
+        sg.authorize_ingress(@authorize_ingress)
+        @security_group_id = sg.group_id
+      end
+    end
+
+    def delete
+      resp = nil
+      group_id = nil
+      @config.ec2.security_groups.each do |sg|
+        if sg.group_name == @security_group[:group_name]
+          group_id = sg.group_id
+        end
+      end
+      unless group_id.nil?
+        resp = @config.client.delete_security_group({
+                                                        group_id: group_id,
+                                                    })
+      end
+      resp
+    end
+  end
+
+  class KeyPair
+    attr_reader :key_pair_name,:pem_file
+
+    def initialize(config)
+      @config = config
       @key_pair_name = "my-key-pair"
       path = Dir.pwd + '/lib/etude_for_aws/ec2/'
       @pem_file = path + "#{@key_pair_name}.pem"
+    end
 
+    def create
+      key_pairs_result = @config.client.describe_key_pairs()
+      key_pairs = []
+      if key_pairs_result.key_pairs.count > 0
+        key_pairs_result.key_pairs.each do |key_pair|
+          key_pairs << key_pair.key_name
+        end
+      end
+
+      unless key_pairs.include?(@key_pair_name)
+        begin
+          key_pair = @config.client.create_key_pair({
+                                                        key_name: @key_pair_name
+                                                    })
+          puts "Created key pair '#{key_pair.key_name}'."
+          puts "\nSHA-1 digest of the DER encoded private key:"
+          puts "#{key_pair.key_fingerprint}"
+          puts "\nUnencrypted PEM encoded RSA private key:"
+          puts "#{key_pair.key_material}"
+        rescue Aws::EC2::Errors::InvalidKeyPairDuplicate
+          puts "A key pair named '#{@key_pair_name}' already exists."
+        end
+
+
+        File.open(@pem_file, "w") do |file|
+          file.puts(key_pair.key_material)
+        end
+      end
+    end
+
+    def delete
+      @config.client.delete_key_pair({
+                                         key_name: @key_pair_name
+                                     })
+      FileUtils.rm(@pem_file)
+    end
+  end
+
+  class Ec2Instance
+    def initialize(config)
+      @config = config
       script = ''
       @encoded_script = Base64.encode64(script)
       @image_id = 'ami-4836a428'
-      @subnet_id = 'subnet-cfd598a8'
-      @az = 'us-west-2b'
       @instance_type = 't2.micro'
       @min_count = 1
       @max_count = 1
       @instance_tags = [{key: 'Name', value: 'MyGroovyInstance'}, {key: 'Group', value: 'MyGroovyGroup'}]
-      @instances = []
+    end
 
-      @tag_name_value = 'MyGroovyInstance'
+    def create(security_group,key_pair)
+      instance = @config.ec2.create_instances({
+                                                  image_id: @image_id,
+                                                  min_count: @min_count,
+                                                  max_count: @max_count,
+                                                  key_name: key_pair.key_pair_name,
+                                                  user_data: @encoded_script,
+                                                  instance_type: @instance_type,
+                                                  placement: {
+                                                      availability_zone: @config.az
+                                                  },
+                                                  network_interfaces: [
+                                                      {
+                                                          device_index: 0,
+                                                          subnet_id: @config.subnet_id,
+                                                          associate_public_ip_address: true,
+                                                          groups: [security_group.security_group_id],
+                                                      },
+                                                  ],
+                                              })
+
+      @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance[0].id]})
+
+      instance.create_tags({tags: @instance_tags})
+
+      instance
+    end
+
+    def terminate
+      instance_ids = []
+      resp = @config.client.describe_instances(filters: [{name: "tag:Name", values: [@instance_tags[0][:value]]}])
+      resp.reservations.each do |reservation|
+        reservation.instances.each do |instance|
+          instance_ids << instance.instance_id
+        end
+      end
+      instance_ids.each do |instance_id|
+        i = @config.ec2.instance(instance_id)
+
+        if i.exists?
+          case i.state.code
+            when 48 # terminated
+              puts "#{instance_id} is already terminated"
+            else
+              i.terminate
+          end
+        end
+
+        @config.ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]})
+      end
     end
   end
 
   class Ec2
     def initialize
       @config = Configuration.new
+      @security_group = SecurityGroup.new(@config)
+      @key_pair = KeyPair.new(@config)
+      @ec2_instance = Ec2Instance.new(@config)
     end
 
     def create
@@ -115,121 +240,27 @@ module EC2
 
     private
     def create_security_group
-      sg_name = []
-      @config.ec2.security_groups.each do |sg|
-        sg_name << sg.group_name
-      end
-      unless sg_name.include?(@config.security_group[:group_name])
-        sg = @config.ec2.create_security_group(@config.security_group)
-
-        sg.authorize_egress(@config.authorize_egress)
-        sg.authorize_ingress(@config.authorize_ingress)
-        @config.security_group_id = sg.group_id
-      end
+      @security_group.create
     end
 
     def create_key_pair
-      key_pairs_result = @config.client.describe_key_pairs()
-      key_pairs = []
-      if key_pairs_result.key_pairs.count > 0
-        key_pairs_result.key_pairs.each do |key_pair|
-          key_pairs << key_pair.key_name
-        end
-      end
-
-      unless key_pairs.include?(@config.key_pair_name)
-        begin
-          key_pair = @config.client.create_key_pair({
-                                                key_name: @config.key_pair_name
-                                            })
-          puts "Created key pair '#{key_pair.key_name}'."
-          puts "\nSHA-1 digest of the DER encoded private key:"
-          puts "#{key_pair.key_fingerprint}"
-          puts "\nUnencrypted PEM encoded RSA private key:"
-          puts "#{key_pair.key_material}"
-        rescue Aws::EC2::Errors::InvalidKeyPairDuplicate
-          puts "A key pair named '#{@config.key_pair_name}' already exists."
-        end
-
-
-        File.open(@config.pem_file, "w") do |file|
-          file.puts(key_pair.key_material)
-        end
-      end
+      @key_pair.create
     end
 
     def create_ec2_instance
-      instance = @config.ec2.create_instances({
-                                          image_id: @config.image_id,
-                                          min_count: @config.min_count,
-                                          max_count: @config.max_count,
-                                          key_name: @config.key_pair_name,
-                                          user_data: @config.encoded_script,
-                                          instance_type: @config.instance_type,
-                                          placement: {
-                                              availability_zone: @config.az
-                                          },
-                                          network_interfaces: [
-                                              {
-                                                  device_index: 0,
-                                                  subnet_id: @config.subnet_id,
-                                                  associate_public_ip_address: true,
-                                                  groups: [@config.security_group_id],
-                                              },
-                                          ],
-                                      })
-
-      @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance[0].id]})
-
-      instance.create_tags({tags: @config.instance_tags})
-
-      @config.instances << instance
+      @ec2_instance.create(@security_group,@key_pair)
     end
 
     def terminate_ec2_instance
-      instance_ids = []
-      resp = @config.client.describe_instances(filters: [{name: "tag:Name", values: [@config.tag_name_value]}])
-      resp.reservations.each do |reservation|
-        reservation.instances.each do |instance|
-          instance_ids << instance.instance_id
-        end
-      end
-      instance_ids.each do |instance_id|
-        i = @config.ec2.instance(instance_id)
-
-        if i.exists?
-          case i.state.code
-            when 48 # terminated
-              puts "#{instance_id} is already terminated"
-            else
-              i.terminate
-          end
-        end
-
-        @config.ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]})
-      end
+      @ec2_instance.terminate
     end
 
     def delete_security_group
-      group_id = nil
-      @config.ec2.security_groups.each do |sg|
-        if sg.group_name == @config.security_group[:group_name]
-          group_id = sg.group_id
-        end
-      end
-      unless group_id.nil?
-        resp = @config.client.delete_security_group({
-                                                group_id: group_id,
-                                            })
-        resp
-      end
+      @security_group.delete
     end
 
     def delete_key_pair
-      @config.client.delete_key_pair({
-                                         key_name: @config.key_pair_name
-                                     })
-      FileUtils.rm(@config.pem_file)
+      @key_pair.delete
     end
   end
 end
