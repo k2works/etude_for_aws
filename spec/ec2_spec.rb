@@ -1,14 +1,14 @@
 require 'spec_helper'
 RSpec.describe EC2::Ec2 do
-  describe '.create' do
+  describe '#create' do
     it 'crate security group and keypair' do
-      EC2::Ec2.create
+      EC2::Ec2.new.create
     end
   end
 
-  describe '.destroy' do
+  describe '#destroy' do
     it 'delete security group and keypair' do
-      EC2::Ec2.destroy
+      EC2::Ec2.new.destroy
     end
   end
 end
