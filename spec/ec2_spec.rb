@@ -8,8 +8,7 @@ RSpec.describe EC2::Ec2 do
 
   describe '.destroy' do
     it 'delete security group and keypair' do
-      resp = EC2::Ec2.destroy
-      expect(resp.to_s).to eq('#<struct Aws::EmptyStructure>')
+      EC2::Ec2.destroy
     end
   end
 end
