@@ -60,6 +60,10 @@ module VPC
       Dir.pwd + @config.template_path + template_file
     end
 
+    def get_subnet_infos
+      infos = []
+    end
+
     private
     def collect_stack_name
       stack_names = []

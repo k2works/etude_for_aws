@@ -219,9 +219,7 @@ module EC2
     def initialize(vpc)
       @config = Configuration.new
       @config.vpc_id = vpc.config.vpc_id
-      info = vpc.get_subnet_info
-      @config.subnet_id = info[:subnet_id]
-      @config.az = info[:az]
+      @subnet_infos = vpc.get_subnet_infos
       @security_group = SecurityGroup.new(@config)
       @key_pair = KeyPair.new(@config)
       @ec2_instance = Ec2Instance.new(@config)
@@ -257,7 +255,11 @@ module EC2
     end
 
     def create_ec2_instance
-      @ec2_instance.create(@security_group,@key_pair)
+      @subnet_infos.each do |info|
+        @config.subnet_id = info[:subnet_id]
+        @config.az = info[:az]
+        @ec2_instance.create(@security_group,@key_pair)
+      end
     end
 
     def terminate_ec2_instance
