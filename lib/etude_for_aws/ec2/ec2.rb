@@ -68,14 +68,11 @@ module EC2
               },
           ],
       }
+      @security_group_id = get_group_id
     end
 
     def create
-      sg_name = []
-      @config.ec2.security_groups.each do |sg|
-        sg_name << sg.group_name
-      end
-      unless sg_name.include?(@security_group[:group_name])
+      if @security_group_id.nil?
         sg = @config.ec2.create_security_group(@security_group)
 
         sg.authorize_egress(@authorize_egress)
@@ -86,18 +83,23 @@ module EC2
 
     def delete
       resp = nil
+      unless @security_group_id.nil?
+        resp = @config.client.delete_security_group({
+                                                        group_id: @security_group_id,
+                                                    })
+      end
+      resp
+    end
+
+    private
+    def get_group_id
       group_id = nil
       @config.ec2.security_groups.each do |sg|
         if sg.group_name == @security_group[:group_name]
           group_id = sg.group_id
         end
       end
-      unless group_id.nil?
-        resp = @config.client.delete_security_group({
-                                                        group_id: group_id,
-                                                    })
-      end
-      resp
+      group_id
     end
   end
 
