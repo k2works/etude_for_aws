@@ -11,10 +11,14 @@ module EC2
                 :ec2,
                 :vpc_id,
                 :subnet_id,
-                :az
+                :az,
+                :yaml
 
     def initialize
       aws_certificate
+
+      @yaml = YAML.load_file('config.yml')
+
       @client = Aws::EC2::Client.new
       @ec2 = Aws::EC2::Resource.new(client: client)
       @vpc_id = 'vpc-4dc3f22a'
@@ -28,8 +32,8 @@ module EC2
 
     def initialize(config)
       @config = config
-      group_name = 'MyGroovySecurityGroup'
-      description = 'Security group for MyGroovyInstance'
+      group_name = @config.yaml['DEV']['EC2']['SECURITY_GROUP_NAME']
+      description = @config.yaml['DEV']['EC2']['SECURITY_GROUP_DESCRIPTION']
       vpc_id = @config.vpc_id
       @security_group = {
           group_name: group_name,
@@ -102,8 +106,8 @@ module EC2
 
     def initialize(config)
       @config = config
-      @key_pair_name = "my-key-pair"
-      path = Dir.pwd + '/lib/etude_for_aws/ec2/'
+      @key_pair_name = @config.yaml['DEV']['EC2']['KEY_PAIR_NAME']
+      path = Dir.pwd + @config.yaml['DEV']['EC2']['KEY_PAIR_PATH']
       @pem_file = path + "#{@key_pair_name}.pem"
     end
 
@@ -150,11 +154,13 @@ module EC2
       @config = config
       script = ''
       @encoded_script = Base64.encode64(script)
-      @image_id = 'ami-4836a428'
-      @instance_type = 't2.micro'
-      @min_count = 1
-      @max_count = 1
-      @instance_tags = [{key: 'Name', value: 'MyGroovyInstance'}, {key: 'Group', value: 'MyGroovyGroup'}]
+      @image_id = @config.yaml['DEV']['EC2']['IMAGE_ID']
+      @instance_type = @config.yaml['DEV']['EC2']['INSTANCE_TYPE']
+      @min_count = @config.yaml['DEV']['EC2']['MIN_COUNT'].to_i
+      @max_count = @config.yaml['DEV']['EC2']['MAX_COUNT'].to_i
+      name_value = @config.yaml['DEV']['EC2']['INSTANCE_TAGS']['NAME_VALUE']
+      group_value = @config.yaml['DEV']['EC2']['INSTANCE_TAGS']['GROUP_VALUE']
+      @instance_tags = [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
     end
 
     def create(security_group,key_pair)
