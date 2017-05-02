@@ -20,6 +20,12 @@ RSpec.describe EC2::Ec2 do
       end
     end
 
+    describe '#stop' do
+      it 'stop instances' do
+        stop_ec2_instance(vpc)
+      end
+    end
+
     describe '#start' do
       it 'start instances' do
         start_ec2_instance(vpc)
@@ -29,12 +35,6 @@ RSpec.describe EC2::Ec2 do
     describe '#reboot' do
       it 'reboot instances' do
         reboot_ec2_instance(vpc)
-      end
-    end
-
-    describe '#stop' do
-      it 'stop instances' do
-        stop_ec2_instance(vpc)
       end
     end
 
