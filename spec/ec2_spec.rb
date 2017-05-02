@@ -73,6 +73,52 @@ RSpec.describe EC2::Ec2 do
     end
   end
 
+  context 'Two Availability Zones Two PrivateSubnet Virtual private cloud' do
+    before(:all) do
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(4),SERVICE_STUB).create
+    end
+
+    after(:all) do
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(4),SERVICE_STUB).destroy
+    end
+
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(4),SERVICE_STUB) }
+    describe '#create' do
+      it 'crate security group and keypair' do
+        create_ec2_instance(vpc)
+      end
+    end
+
+    describe '#destroy' do
+      it 'delete security group and keypair' do
+        destroy_ec2_instance(vpc)
+      end
+    end
+  end
+
+  context 'Two Availability Zones Two PublicSubnet Virtual private cloud' do
+    before(:all) do
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(5),SERVICE_STUB).create
+    end
+
+    after(:all) do
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(5),SERVICE_STUB).destroy
+    end
+
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(5),SERVICE_STUB) }
+    describe '#create' do
+      it 'crate security group and keypair' do
+        create_ec2_instance(vpc)
+      end
+    end
+
+    describe '#destroy' do
+      it 'delete security group and keypair' do
+        destroy_ec2_instance(vpc)
+      end
+    end
+  end
+
   context 'Two Availability Zones One PublicSubnet and PrivateSubnet Virtual private cloud' do
     before(:all) do
       setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(6),SERVICE_STUB).create
@@ -95,6 +141,30 @@ RSpec.describe EC2::Ec2 do
       end
     end
   end
+
+  context 'Two Availability Zones Two PublicSubnet and PrivateSubnet Virtual private cloud' do
+    before(:all) do
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(7),SERVICE_STUB).create
+    end
+
+    after(:all) do
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(7),SERVICE_STUB).destroy
+    end
+
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(7),SERVICE_STUB) }
+    describe '#create' do
+      it 'crate security group and keypair' do
+        create_ec2_instance(vpc)
+      end
+    end
+
+    describe '#destroy' do
+      it 'delete security group and keypair' do
+        destroy_ec2_instance(vpc)
+      end
+    end
+  end
+
 end
 
 def create_ec2_instance(vpc)

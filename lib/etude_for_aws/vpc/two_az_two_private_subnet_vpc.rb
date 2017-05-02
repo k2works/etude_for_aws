@@ -20,5 +20,19 @@ module VPC
     end
   end
 
-  class TwoAzTwoPrivateSubnetVpcStub < VpcStub; end
+  class TwoAzTwoPrivateSubnetVpcStub < VpcStub
+    def get_subnet_info
+      info = {}
+      info[:subnet_id] = 'DUMMY_SUBNET_ID'
+      info[:az] = 'DUMMY_AZ'
+      info
+    end
+
+    def get_subnet_infos
+      infos = []
+      infos << get_subnet_info
+      infos << get_subnet_info
+      infos
+    end
+  end
 end
