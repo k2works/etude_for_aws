@@ -5,7 +5,7 @@ Create`.env`
 ```text
 AWS_ACCESS_KEY_ID="<id>"
 AWS_SECRET_ACCESS_KEY="<key>"
-AWS_DEFAULT_REGION="<region>"
+AWS_REGION="<region>"
 ```
 
 ### Using Vagrant
