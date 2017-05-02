@@ -276,35 +276,6 @@ module EC2
   end
 
   class Ec2Stub < Ec2
-    def initialize(vpc)
-      @config = Configuration.new
-      @config.vpc_id = vpc.config.vpc_id
-      @subnet_infos = vpc.get_subnet_infos
-      @security_group = SecurityGroup.new(@config)
-      @key_pair = KeyPair.new(@config)
-      @ec2_instance = Ec2Instance.new(@config)
-    end
-
-    def create
-
-      create_security_group
-
-      create_key_pair
-
-      create_ec2_instance
-
-    end
-
-    def destroy
-
-      terminate_ec2_instance
-
-      delete_security_group
-
-      delete_key_pair
-
-    end
-
     private
     def create_security_group
       p "#{self.class} Create Security Group"
