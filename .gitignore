@@ -100,3 +100,4 @@ build-iPhoneSimulator/
 .rvmrc
 
 .rspec_status
+*.pem

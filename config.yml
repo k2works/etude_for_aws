@@ -13,3 +13,16 @@ DEV:
     TEMPLATE_PARAMS_AZ2: 'us-west-2b'
     TEMPLATE_PARAMS_AZ3: 'us-west-2c'
     TAG_VALUE: 'test'
+  EC2:
+    SECURITY_GROUP_NAME: 'MyGroovySecurityGroup'
+    SECURITY_GROUP_DESCRIPTION: 'Security group for MyGroovyInstance'
+    KEY_PAIR_NAME: 'my-key-pair'
+    KEY_PAIR_PATH: '/lib/etude_for_aws/ec2/'
+    IMAGE_ID: 'ami-4836a428'
+    INSTANCE_TYPE: 't2.micro'
+    MIN_COUNT: '1'
+    MAX_COUNT: '1'
+    INSTANCE_TAGS:
+      NAME_VALUE: 'MyGroovyInstance'
+      GROUP_VALUE: 'MyGroovyGroup'
+

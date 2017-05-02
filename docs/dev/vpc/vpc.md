@@ -36,4 +36,4 @@ VPC
 
 
 ## コアモデル
-![](../images/core_model.png)
+![](../images/vpc_core_model.png)

@@ -7,14 +7,8 @@ require "etude_for_aws"
 # with your gem easier. You can also use a different console, if you like.
 
 # (If you use this, don't forget to add pry to your Gemfile!)
-#require "pry"
-#Pry.start()
+require "pry"
+Pry.start()
 
 #require "irb"
 #IRB.start(__FILE__)
-
-Dotenv.load
-system("export AWS_ACCESS_KEY_ID=#{ENV['AWS_ACCESS_KEY_ID']}")
-system("export AWS_SECRET_ACCESS_KEY=#{ENV['AWS_SECRET_ACCESS_KEY']}")
-system("export AWS_DEFAULT_REGION=#{ENV['AWS_DEFAULT_REGION']}")
-system("aws.rb")

@@ -1,0 +1,27 @@
+@startuml
+cloud Internet
+frame "AWS" {
+frame "VPC" {
+    Internet - [InternetGateway]
+    [InternetGateway] -- [RouteTable]
+    [RouteTable] -- PublicSubnet1
+    frame "AZ1" {
+      frame "PublicSubnet1" {
+        node ec2 [
+        EC2 Instance
+        ----
+        MyGroovyInstance
+        ====
+        ]
+      }
+    }
+}
+}
+note right of PublicSubnet1
+  10.0.0.0/24
+end note
+note left of ec2
+  SecurityGroup:MyGroovySecurityGroup
+  KeyPair:my-key-pair
+end note
+@enduml
