@@ -6,14 +6,14 @@ RSpec.describe EC2::Ec2 do
 
   context 'One Availability Zones One PublicSubnet Virtual private cloud' do
     before(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(1)).create
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(1),SERVICE_STUB).create
     end
 
     after(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(1)).destroy
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(1),SERVICE_STUB).destroy
     end
 
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(1)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(1),SERVICE_STUB) }
     describe '#create' do
       it 'crate security group and keypair' do
         create_ec2_instance(vpc)
@@ -29,14 +29,14 @@ RSpec.describe EC2::Ec2 do
 
   context 'One Availability Zones Two PublicSubnet Virtual private cloud' do
     before(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(2)).create
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(2),SERVICE_STUB).create
     end
 
     after(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(2)).destroy
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(2),SERVICE_STUB).destroy
     end
 
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(2)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(2),SERVICE_STUB) }
     describe '#create' do
       it 'crate security group and keypair' do
         create_ec2_instance(vpc)
@@ -52,14 +52,14 @@ RSpec.describe EC2::Ec2 do
 
   context 'One Availability Zones One PublicSubnet One PrivateSubnet Virtual private cloud' do
     before(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(3)).create
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(3),SERVICE_STUB).create
     end
 
     after(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(3)).destroy
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(3),SERVICE_STUB).destroy
     end
 
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(3)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(3),SERVICE_STUB) }
     describe '#create' do
       it 'crate security group and keypair' do
         create_ec2_instance(vpc)
@@ -75,14 +75,14 @@ RSpec.describe EC2::Ec2 do
 
   context 'Two Availability Zones One PublicSubnet and PrivateSubnet Virtual private cloud' do
     before(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(6)).create
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(6),SERVICE_STUB).create
     end
 
     after(:all) do
-      create_vpc_instance(VPC::Vpc::TYPE.fetch(6)).destroy
+      setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(6),SERVICE_STUB).destroy
     end
 
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(6)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(6),SERVICE_STUB) }
     describe '#create' do
       it 'crate security group and keypair' do
         create_ec2_instance(vpc)

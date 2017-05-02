@@ -307,29 +307,29 @@ module EC2
 
     private
     def create_security_group
-      p 'Create Security Group'
+      p "#{self.class} Create Security Group"
     end
 
     def create_key_pair
-      p 'Create key pair'
+      p "#{self.class} Create key pair"
     end
 
     def create_ec2_instance
       @subnet_infos.each do |info|
-        p "Create EC2 Instance in Subnet #{info[:subnet_id]}"
+        p "#{self.class} Create EC2 Instance in Subnet #{info[:subnet_id]}"
       end
     end
 
     def terminate_ec2_instance
-      p 'Terminate EC2 Instance'
+      p "#{self.class} Terminate EC2 Instance"
     end
 
     def delete_security_group
-      p 'Delete Security Group'
+      p "#{self.class} Delete Security Group"
     end
 
     def delete_key_pair
-      p 'Delete key pair'
+      p "#{self.class} Delete key pair"
     end
   end
 end
