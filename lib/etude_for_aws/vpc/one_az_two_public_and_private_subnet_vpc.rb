@@ -13,5 +13,19 @@ module VPC
           },
       ]
     end
+
+    def get_subnet_info(logical_resource_id)
+      info = {}
+      info[:subnet_id] = @cfm.describe_stack_resource({stack_name: @config.stack_name, logical_resource_id: logical_resource_id}).stack_resource_detail.physical_resource_id
+      info[:az] = @config.azs[0]
+      info
+    end
+
+    def get_subnet_infos
+      infos = []
+      infos << get_subnet_info('PublicSubnet')
+      infos << get_subnet_info('PrivateSubnet')
+      infos
+    end
   end
 end

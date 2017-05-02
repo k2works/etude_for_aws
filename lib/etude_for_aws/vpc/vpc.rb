@@ -61,7 +61,6 @@ module VPC
     end
 
     def get_subnet_infos
-      infos = []
     end
 
     private
