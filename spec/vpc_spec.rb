@@ -2,23 +2,13 @@ require "spec_helper"
 include VpcSpecHelper
 
 RSpec.describe VPC::Vpc do
-  EXECUTE = false
+  SERVICE_STUB = true
 
   context 'One Availability Zones One PublicSubnet Virtual private cloud' do
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(1)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(1),SERVICE_STUB) }
     describe '#create' do
       it 'create vpc using cloud formation' do
         check_create(vpc)
-      end
-    end
-
-    describe '#set_vpc_id' do
-      it 'has vpc id' do
-        if EXECUTE
-          sleep(5)
-          vpc.set_vpc_id
-          expect(vpc.config.vpc_id).not_to be_nil
-        end
       end
     end
 
@@ -30,7 +20,7 @@ RSpec.describe VPC::Vpc do
   end
 
   context 'One Availability Zones Two PublicSubnet Virtual private cloud' do
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(2)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(2),SERVICE_STUB) }
     describe '#create' do
       it 'create vpc using cloud formation' do
         check_create(vpc)
@@ -45,7 +35,7 @@ RSpec.describe VPC::Vpc do
   end
 
   context 'One Availability Zones One PublicSubnet One PrivateSubnet Virtual private cloud' do
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(3)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(3),SERVICE_STUB) }
     describe '#create' do
       it 'create vpc using cloud formation' do
         check_create(vpc)
@@ -60,7 +50,7 @@ RSpec.describe VPC::Vpc do
   end
 
   context 'Two Availability Zones Two PrivateSubnet Virtual private cloud' do
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(4)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(4),SERVICE_STUB) }
     describe '#create' do
       it 'create vpc using cloud formation' do
         check_create(vpc)
@@ -75,7 +65,7 @@ RSpec.describe VPC::Vpc do
   end
 
   context 'Two Availability Zones Two PublicSubnet Virtual private cloud' do
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(5)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(5),SERVICE_STUB) }
     describe '#create' do
       it 'create vpc using cloud formation' do
         check_create(vpc)
@@ -90,7 +80,7 @@ RSpec.describe VPC::Vpc do
   end
 
   context 'Two Availability Zones One PublicSubnet and PrivateSubnet Virtual private cloud' do
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(6)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(6),SERVICE_STUB) }
     describe '#create' do
       it 'create vpc using cloud formation' do
         check_create(vpc)
@@ -105,7 +95,7 @@ RSpec.describe VPC::Vpc do
   end
 
   context 'Two Availability Zones Two PublicSubnet and PrivateSubnet Virtual private cloud' do
-    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(7)) }
+    let(:vpc) { setup_create_vpc_instance(VPC::Vpc::TYPE.fetch(7),SERVICE_STUB) }
     describe '#create' do
       it 'create vpc using cloud formation' do
         check_create(vpc)
@@ -120,7 +110,7 @@ RSpec.describe VPC::Vpc do
   end
 
   context 'Exception' do
-    let(:vpc) { create_vpc_instance(:NOT_DEFINE) }
+    let(:vpc) { setup_create_vpc_instance(:NOT_DEFINE,SERVICE_STUB) }
     describe '#create' do
       it 'do noting' do
         vpc.create
@@ -137,17 +127,13 @@ RSpec.describe VPC::Vpc do
   end
 
   def check_create(vpc)
-    if EXECUTE
       vpc.create
       expect(vpc.config.stack_id).not_to be_nil
-    end
   end
 
   def check_destroy(vpc)
-    if EXECUTE
       vpc.destroy
       expect(vpc.config.stack_id).to eq('Aws::EmptyStructure')
       expect(vpc.config.vpc_id).to be_nil
-    end
   end
 end

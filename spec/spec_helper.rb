@@ -31,4 +31,33 @@ module VpcSpecHelper
         return VPC::NullVpc.new
     end
   end
+
+  def create_vpc_instance_stub(type)
+    case type
+      when :ONE_AZ_ONE_PUB
+        return VPC::OneAzOnePublicSubnetVpcStub.new
+      when :ONE_AZ_TWO_PUB
+        return VPC::OneAzTwoPublicSubnetVpcStub.new
+      when :ONE_AZ_ONE_PUB_PRI
+        return VPC::OneAzTwoPublicAndPrivateSubnetVpcStub.new
+      when :TWO_AZ_TWO_PRI
+        return VPC::TwoAzTwoPrivateSubnetVpcStub.new
+      when :TWO_AZ_TWO_PUB
+        return VPC::TwoAzTwoPublicSubnetVpcStub.new
+      when :TWO_AZ_ONE_PUB_RPI
+        return VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpcStub.new
+      when :TWO_AZ_TWO_PUB_PRI
+        return VPC::TwoAzTwoPublicSubnetAndPrivateSubnetVpcStub.new
+      else
+        return VPC::NullVpc.new
+    end
+  end
+
+  def setup_create_vpc_instance(type,stub)
+    if stub
+      create_vpc_instance_stub(type)
+    else
+      create_vpc_instance(type)
+    end
+  end
 end

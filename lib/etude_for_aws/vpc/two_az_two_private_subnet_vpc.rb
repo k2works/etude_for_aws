@@ -19,4 +19,6 @@ module VPC
       ]
     end
   end
+
+  class TwoAzTwoPrivateSubnetVpcStub < VpcStub; end
 end

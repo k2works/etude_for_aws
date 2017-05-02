@@ -33,4 +33,6 @@ module VPC
       infos
     end
   end
+
+  class TwoAzOnePublicSubnetAndPrivateSubnetVpcStub < VpcStub; end
 end

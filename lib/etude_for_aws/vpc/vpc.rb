@@ -49,12 +49,6 @@ module VPC
       end
     end
 
-    def set_vpc_id
-      if collect_stack_name.include?(@config.stack_name)
-        @config.vpc_id = get_vpc_id
-      end
-    end
-
     protected
     def get_template_full_path(template_file)
       Dir.pwd + @config.template_path + template_file
@@ -74,6 +68,25 @@ module VPC
 
     def get_vpc_id
       @cfm.describe_stack_resource({stack_name: @config.stack_name, logical_resource_id: 'VPC'}).stack_resource_detail.physical_resource_id
+    end
+
+    def set_vpc_id
+      if collect_stack_name.include?(@config.stack_name)
+        @config.vpc_id = get_vpc_id
+      end
+    end
+  end
+
+  class VpcStub < Vpc
+    def create
+      p "#{self.class} Create Virtual Private Cloud"
+      @config.stack_id = 'DUMMY'
+    end
+
+    def destroy
+      p "#{self.class} Destroy Virtual Private Cloud"
+      @config.stack_id = 'Aws::EmptyStructure'
+      @config.vpc_id = nil
     end
   end
 end

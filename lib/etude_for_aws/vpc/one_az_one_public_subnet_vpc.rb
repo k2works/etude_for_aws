@@ -27,4 +27,6 @@ module VPC
       infos
     end
   end
+
+  class OneAzOnePublicSubnetVpcStub < VpcStub ;end
 end
