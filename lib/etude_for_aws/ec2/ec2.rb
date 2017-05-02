@@ -48,10 +48,11 @@ module EC2
             when 48  # terminated
               puts "#{instance_id} is terminated, so you cannot start it"
             else
+              puts "#{instance_id} is starting"
               i.start
+              @config.ec2.client.wait_until(:instance_running, {instance_ids: [instance_id]})
           end
         end
-        @config.ec2.client.wait_until(:instance_running, {instance_ids: [instance_id]})
       end
     end
 
@@ -69,10 +70,11 @@ module EC2
             when 89  # stopped
               puts "#{instance_id} is already stopped"
             else
+              puts "#{instance_id} is stopping"
               i.stop
+              @config.ec2.client.wait_until(:instance_stopped, {instance_ids: [instance_id]})
           end
         end
-        @config.ec2.client.wait_until(:instance_stopped, {instance_ids: [instance_id]})
       end
     end
 
@@ -86,10 +88,11 @@ module EC2
             when 48  # terminated
               puts "#{instance_id} is terminated, so you cannot reboot it"
             else
+              puts "#{instance_id} is rebooting"
               i.reboot
+              @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance_id]})
           end
         end
-        @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance_id]})
       end
     end
 

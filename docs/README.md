@@ -37,6 +37,8 @@ AWS構築のための練習プログラム集
 **[⬆ back to top](#構成)**
 
 ## 運用
+[Rake Task](./ops/run_rake_task.md)
+
 **[⬆ back to top](#運用)**
 
 # 参照 #
