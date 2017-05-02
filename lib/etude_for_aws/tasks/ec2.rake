@@ -18,8 +18,8 @@ namespace :EC2 do
   desc '１つのアベイラビリティゾーンに１つのパブリックサブネットのVPC環境のEC2インスタンスを削除する'
   task :destroy_type01_env do
     vpc = VPC::OneAzOnePublicSubnetVpc.new
-    vpc.destroy
     EC2::Ec2.new(vpc).destroy
+    vpc.destroy
   end
 
   desc '１つのアベイラビリティゾーンに１つのパブリックサブネットのVPC環境にEC2インスタンスを停止する'
@@ -50,8 +50,8 @@ namespace :EC2 do
   desc '１つのアベイラビリティゾーンに２つのパブリックサブネットのVPC環境のEC2インスタンスを削除する'
   task :destroy_type02_env do
     vpc = VPC::OneAzTwoPublicSubnetVpc.new
-    vpc.destroy
     EC2::Ec2.new(vpc).destroy
+    vpc.destroy
   end
 
   desc '１つのアベイラビリティゾーンに１つのパブリックサブネットと１つのプライベートサブネットのVPC環境にEC2インスタンスを作成する'
@@ -64,8 +64,8 @@ namespace :EC2 do
   desc '１つのアベイラビリティゾーンに１つのパブリックサブネットと１つのプライベートサブネットのVPC環境のEC2インスタンスを削除する'
   task :destroy_type03_env do
     vpc = VPC::OneAzTwoPublicAndPrivateSubnetVpc.new
-    vpc.destroy
     EC2::Ec2.new(vpc).destroy
+    vpc.destroy
   end
 
   desc '２つのアベイラビリティゾーンに２つのプライベートサブネットのVPC環境にEC2インスタンスを作成する'
@@ -78,8 +78,8 @@ namespace :EC2 do
   desc '２つのアベイラビリティゾーンに２つのプライベートサブネットのVPC環境のEC2インスタンスを削除する'
   task :destroy_type04_env do
     vpc = VPC::TwoAzTwoPrivateSubnetVpc.new
-    vpc.destroy
     EC2::Ec2.new(vpc).destroy
+    vpc.destroy
   end
 
   desc '２つのアベイラビリティゾーンに２つのパブリックサブネットのVPC環境にEC2インスタンスを作成する'
@@ -92,8 +92,8 @@ namespace :EC2 do
   desc '２つのアベイラビリティゾーンに２つのパブリックサブネットのVPC環境のEC2インスタンスを削除する'
   task :destroy_type05_env do
     vpc = VPC::TwoAzTwoPublicSubnetVpc.new
-    vpc.destroy
     EC2::Ec2.new(vpc).destroy
+    vpc.destroy
   end
 
   desc '２つのアベイラビリティゾーンに１つのパブリックサブネットと１つのプライベートサブネットのVPC環境にEC2インスタンスを作成する'
@@ -106,8 +106,8 @@ namespace :EC2 do
   desc '２つのアベイラビリティゾーンに１つのパブリックサブネットと１つのプライベートサブネットのVPC環境のEC2インスタンスを削除する'
   task :destroy_type06_env do
     vpc = VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new
-    vpc.destroy
     EC2::Ec2.new(vpc).destroy
+    vpc.destroy
   end
 
   desc '２つのアベイラビリティゾーンに２つのパブリックサブネットと２つのプライベートサブネットのVPC環境にEC2インスタンスを作成する'
@@ -120,10 +120,9 @@ namespace :EC2 do
   desc '２つのアベイラビリティゾーンに２つのパブリックサブネットと２つのプライベートサブネットVPCのVPC環境のEC2インスタンスを削除する'
   task :destroy_type07_env do
     vpc = VPC::TwoAzTwoPublicSubnetAndPrivateSubnetVpc.new
-    vpc.destroy
     EC2::Ec2.new(vpc).destroy
+    vpc.destroy
   end
-
 
   desc '作成したキーペアをコピーする'
   task :copy_key_pair do
