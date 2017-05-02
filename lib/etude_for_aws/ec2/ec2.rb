@@ -274,4 +274,62 @@ module EC2
       @key_pair.delete
     end
   end
+
+  class Ec2Stub < Ec2
+    def initialize(vpc)
+      @config = Configuration.new
+      @config.vpc_id = vpc.config.vpc_id
+      @subnet_infos = vpc.get_subnet_infos
+      @security_group = SecurityGroup.new(@config)
+      @key_pair = KeyPair.new(@config)
+      @ec2_instance = Ec2Instance.new(@config)
+    end
+
+    def create
+
+      create_security_group
+
+      create_key_pair
+
+      create_ec2_instance
+
+    end
+
+    def destroy
+
+      terminate_ec2_instance
+
+      delete_security_group
+
+      delete_key_pair
+
+    end
+
+    private
+    def create_security_group
+      p 'Create Security Group'
+    end
+
+    def create_key_pair
+      p 'Create key pair'
+    end
+
+    def create_ec2_instance
+      @subnet_infos.each do |info|
+        p "Create EC2 Instance in Subnet #{info[:subnet_id]}"
+      end
+    end
+
+    def terminate_ec2_instance
+      p 'Terminate EC2 Instance'
+    end
+
+    def delete_security_group
+      p 'Delete Security Group'
+    end
+
+    def delete_key_pair
+      p 'Delete key pair'
+    end
+  end
 end
