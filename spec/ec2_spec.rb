@@ -69,4 +69,27 @@ RSpec.describe EC2::Ec2 do
       end
     end
   end
+
+  context 'Two Availability Zones One PublicSubnet and PrivateSubnet Virtual private cloud' do
+    before(:all) do
+      VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new.create
+    end
+
+    after(:all) do
+      VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new.destroy
+    end
+
+    let(:vpc) { VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new }
+    describe '#create' do
+      it 'crate security group and keypair' do
+        EC2::Ec2.new(vpc).create
+      end
+    end
+
+    describe '#destroy' do
+      it 'delete security group and keypair' do
+        EC2::Ec2.new(vpc).destroy
+      end
+    end
+  end
 end
