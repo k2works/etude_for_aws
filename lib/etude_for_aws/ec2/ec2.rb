@@ -191,13 +191,7 @@ module EC2
     end
 
     def terminate
-      instance_ids = []
-      resp = @config.client.describe_instances(filters: [{name: "tag:Name", values: [@instance_tags[0][:value]]}])
-      resp.reservations.each do |reservation|
-        reservation.instances.each do |instance|
-          instance_ids << instance.instance_id
-        end
-      end
+      instance_ids = get_instance_collection
       instance_ids.each do |instance_id|
         i = @config.ec2.instance(instance_id)
 
@@ -212,6 +206,17 @@ module EC2
 
         @config.ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]})
       end
+    end
+
+    def get_instance_collection
+      instance_ids = []
+      resp = @config.client.describe_instances(filters: [{name: "tag:Name", values: [@instance_tags[0][:value]]}])
+      resp.reservations.each do |reservation|
+        reservation.instances.each do |instance|
+          instance_ids << instance.instance_id
+        end
+      end
+      instance_ids
     end
   end
 
@@ -245,6 +250,65 @@ module EC2
 
     end
 
+    def start
+      instance_ids = @ec2_instance.get_instance_collection
+      instance_ids.each do |instance_id|
+        i = @config.ec2.instance(instance_id)
+
+        if i.exists?
+          case i.state.code
+            when 0  # pending
+              puts "#{instance_id} is pending, so it will be running in a bit"
+            when 16  # started
+              puts "#{instance_id} is already started"
+            when 48  # terminated
+              puts "#{instance_id} is terminated, so you cannot start it"
+            else
+              i.start
+          end
+        end
+        @config.ec2.client.wait_until(:instance_running, {instance_ids: [instance_id]})
+      end
+    end
+
+    def stop
+      instance_ids = @ec2_instance.get_instance_collection
+      instance_ids.each do |instance_id|
+        i = @config.ec2.instance(instance_id)
+
+        if i.exists?
+          case i.state.code
+            when 48  # terminated
+              puts "#{instance_id} is terminated, so you cannot stop it"
+            when 64  # stopping
+              puts "#{instance_id} is stopping, so it will be stopped in a bit"
+            when 89  # stopped
+              puts "#{instance_id} is already stopped"
+            else
+              i.stop
+          end
+        end
+        @config.ec2.client.wait_until(:instance_stopped, {instance_ids: [instance_id]})
+      end
+    end
+
+    def reboot
+      instance_ids = @ec2_instance.get_instance_collection
+      instance_ids.each do |instance_id|
+        i = @config.ec2.instance(instance_id)
+
+        if i.exists?
+          case i.state.code
+            when 48  # terminated
+              puts "#{instance_id} is terminated, so you cannot reboot it"
+            else
+              i.reboot
+          end
+        end
+        @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance_id]})
+      end
+    end
+
     private
     def create_security_group
       @security_group.create
@@ -276,6 +340,18 @@ module EC2
   end
 
   class Ec2Stub < Ec2
+    def start
+      p "#{self.class} start instances"
+    end
+
+    def reboot
+      p "#{self.class} reboot instances"
+    end
+
+    def stop
+      p "#{self.class} stop instances"
+    end
+
     private
     def create_security_group
       p "#{self.class} Create Security Group"

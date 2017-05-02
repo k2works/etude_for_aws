@@ -20,6 +20,24 @@ RSpec.describe EC2::Ec2 do
       end
     end
 
+    describe '#start' do
+      it 'start instances' do
+        start_ec2_instance(vpc)
+      end
+    end
+
+    describe '#reboot' do
+      it 'reboot instances' do
+        reboot_ec2_instance(vpc)
+      end
+    end
+
+    describe '#stop' do
+      it 'stop instances' do
+        stop_ec2_instance(vpc)
+      end
+    end
+
     describe '#destroy' do
       it 'delete security group and keypair' do
         destroy_ec2_instance(vpc)
@@ -182,3 +200,29 @@ def destroy_ec2_instance(vpc)
     EC2::Ec2.new(vpc).destroy
   end
 end
+
+def start_ec2_instance(vpc)
+  if SERVICE_STUB
+    EC2::Ec2Stub.new(vpc).start
+  else
+    EC2::Ec2.new(vpc).start
+  end
+end
+
+def stop_ec2_instance(vpc)
+  if SERVICE_STUB
+    EC2::Ec2Stub.new(vpc).stop
+  else
+    EC2::Ec2.new(vpc).stop
+  end
+end
+
+def reboot_ec2_instance(vpc)
+  if SERVICE_STUB
+    EC2::Ec2Stub.new(vpc).reboot
+  else
+    EC2::Ec2.new(vpc).reboot
+  end
+end
+
+
