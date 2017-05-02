@@ -1,4 +1,5 @@
 DEV:
+  REGION: 'us-west-2'
   VPC:
     STACK_NAME: 'VPCtestStack'
     TEMPLATE_PATH: '/lib/etude_for_aws/vpc/cfm_templates/'
