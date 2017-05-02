@@ -1,16 +1,17 @@
 require 'spec_helper'
+include VpcSpecHelper
 
 RSpec.describe EC2::Ec2 do
   context 'One Availability Zones One PublicSubnet Virtual private cloud' do
     before(:all) do
-      VPC::OneAzOnePublicSubnetVpc.new.create
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(1)).create
     end
 
     after(:all) do
-      VPC::OneAzOnePublicSubnetVpc.new.destroy
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(1)).destroy
     end
 
-    let(:vpc) { VPC::OneAzOnePublicSubnetVpc.new }
+    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(1)) }
     describe '#create' do
       it 'crate security group and keypair' do
         EC2::Ec2.new(vpc).create
@@ -26,14 +27,14 @@ RSpec.describe EC2::Ec2 do
 
   context 'One Availability Zones Two PublicSubnet Virtual private cloud' do
     before(:all) do
-      VPC::OneAzTwoPublicSubnetVpc.new.create
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(2)).create
     end
 
     after(:all) do
-      VPC::OneAzTwoPublicSubnetVpc.new.destroy
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(2)).destroy
     end
 
-    let(:vpc) { VPC::OneAzTwoPublicSubnetVpc.new }
+    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(2)) }
     describe '#create' do
       it 'crate security group and keypair' do
         EC2::Ec2.new(vpc).create
@@ -49,14 +50,14 @@ RSpec.describe EC2::Ec2 do
 
   context 'One Availability Zones One PublicSubnet One PrivateSubnet Virtual private cloud' do
     before(:all) do
-      VPC::OneAzTwoPublicAndPrivateSubnetVpc.new.create
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(3)).create
     end
 
     after(:all) do
-      VPC::OneAzTwoPublicAndPrivateSubnetVpc.new.destroy
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(3)).destroy
     end
 
-    let(:vpc) { VPC::OneAzTwoPublicAndPrivateSubnetVpc.new }
+    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(3)) }
     describe '#create' do
       it 'crate security group and keypair' do
         EC2::Ec2.new(vpc).create
@@ -72,14 +73,14 @@ RSpec.describe EC2::Ec2 do
 
   context 'Two Availability Zones One PublicSubnet and PrivateSubnet Virtual private cloud' do
     before(:all) do
-      VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new.create
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(6)).create
     end
 
     after(:all) do
-      VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new.destroy
+      create_vpc_instance(VPC::Vpc::TYPE.fetch(6)).destroy
     end
 
-    let(:vpc) { VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new }
+    let(:vpc) { create_vpc_instance(VPC::Vpc::TYPE.fetch(6)) }
     describe '#create' do
       it 'crate security group and keypair' do
         EC2::Ec2.new(vpc).create

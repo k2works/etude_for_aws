@@ -1,4 +1,5 @@
 require "spec_helper"
+include VpcSpecHelper
 
 RSpec.describe VPC::Vpc do
   EXECUTE = false
@@ -132,27 +133,6 @@ RSpec.describe VPC::Vpc do
         vpc.destroy
         expect(vpc.config.stack_id).to be_nil
       end
-    end
-  end
-
-  def create_vpc_instance(type)
-    case type
-      when :ONE_AZ_ONE_PUB
-        return VPC::OneAzOnePublicSubnetVpc.new
-      when :ONE_AZ_TWO_PUB
-        return VPC::OneAzTwoPublicSubnetVpc.new
-      when :ONE_AZ_ONE_PUB_PRI
-        return VPC::OneAzTwoPublicAndPrivateSubnetVpc.new
-      when :TWO_AZ_TWO_PRI
-        return VPC::TwoAzTwoPrivateSubnetVpc.new
-      when :TWO_AZ_TWO_PUB
-        return VPC::TwoAzTwoPublicSubnetVpc.new
-      when :TWO_AZ_ONE_PUB_RPI
-        return VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new
-      when :TWO_AZ_TWO_PUB_PRI
-        return VPC::TwoAzTwoPublicSubnetAndPrivateSubnetVpc.new
-      else
-        return VPC::NullVpc.new
     end
   end
 
