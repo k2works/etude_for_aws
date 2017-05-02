@@ -1,0 +1,32 @@
+@startuml
+
+package Aws {
+  class EC2::Client
+  class EC2::Resource
+}
+
+package VPC {
+}
+
+Interface CertificationHelper
+
+package EC2 {
+  class Ec2 {
+    create()
+    destroy()
+    start()
+    stop()
+    reboot()
+  }
+  CertificationHelper <|-- Configuration
+  Configuration o-u- EC2::Client
+  Configuration o-u- EC2::Resource
+  Ec2 -l-> VPC
+  Ec2 "1" *-l- "1" Configuration
+  Ec2 "1" *-- "1..*" Ec2Instance
+  Ec2 "1" *-- "1" KeyPair
+  Ec2 "1" *-- "1" SecurityGroup
+
+}
+
+@enduml

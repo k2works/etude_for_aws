@@ -1,6 +1,15 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "AWS CloudFormation Sample Template.",
+  "Parameters" : {
+    "AZ1" : {
+      "Default" : "ap-northeast-1a",
+      "Description" : "AZ",
+      "Type" : "String",
+      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c" ],
+      "ConstraintDescription" : "must select a valid availability zone."
+    }
+  },
   "Resources": {
     "VPC": {
       "Type": "AWS::EC2::VPC",
@@ -28,6 +37,7 @@
           "Ref": "VPC"
         },
         "CidrBlock": "10.0.0.0/24",
+        "AvailabilityZone": {"Ref": "AZ1"},
         "Tags": [
           {
             "Key": "Application",
