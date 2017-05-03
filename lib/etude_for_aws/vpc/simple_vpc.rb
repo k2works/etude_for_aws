@@ -9,24 +9,27 @@ module VPC
         ec2 = Aws::EC2::Client.new
 
         # VPCを作成する
+        vpc_cidr_block = '10.0.0.0/16'
         resp = ec2.create_vpc({
-                                  cidr_block: '10.0.0.0/16'
+                                  cidr_block: vpc_cidr_block
                               }
         )
         vpc_id = resp.vpc.vpc_id
         ec2.wait_until(:vpc_exists, {vpc_ids: [vpc_id]})
         vpc = Aws::EC2::Vpc.new(vpc_id)
-        vpc.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
+        tags = {tags: [{key: 'Name', value: 'TestVpc'}]}
+        vpc.create_tags(tags)
 
         # サブネットを作成する
+        subnet_cidr_block = '10.0.0.0/24'
         resp = ec2.create_subnet({
-                                     cidr_block:'10.0.0.0/24',
+                                     cidr_block: subnet_cidr_block,
                                      vpc_id: vpc_id,
                                  })
         subnet_id = resp.subnet.subnet_id
         ec2.wait_until(:subnet_available, {subnet_ids: [subnet_id]})
         subnet = Aws::EC2::Subnet.new(subnet_id)
-        subnet.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
+        subnet.create_tags(tags)
 
         # インターネットゲートウェイを作成する
         resp = ec2.create_internet_gateway
@@ -36,7 +39,7 @@ module VPC
                                         vpc_id: vpc_id
                                     })
         internet_gateway = Aws::EC2::InternetGateway.new(internet_gateway_id)
-        internet_gateway.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
+        internet_gateway.create_tags(tags)
 
         # ルートテーブルを作成する
         resp = ec2.create_route_table({
@@ -48,9 +51,10 @@ module VPC
                                       subnet_id: subnet_id
                                   })
         route_table = Aws::EC2::RouteTable.new(route_table_id)
-        route_table.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
+        route_table.create_tags(tags)
+        destination_cidr_block = '0.0.0.0/0'
         route_table.create_route({
-                                     destination_cidr_block:'0.0.0.0/0',
+                                     destination_cidr_block: destination_cidr_block,
                                      gateway_id:internet_gateway_id,
                                  })
 
@@ -70,10 +74,11 @@ module VPC
         Dotenv.load
         ec2 = Aws::EC2::Client.new
 
-        vpcs = ec2.describe_vpcs({filters:[{name:'tag-value',values:['TestVpc']}],}).vpcs
-        subnets = ec2.describe_subnets({filters:[{name:'tag-value',values:['TestVpc']}],}).subnets
-        internet_gateways = ec2.describe_internet_gateways({filters:[{name:'tag-value',values:['TestVpc']}],}).internet_gateways
-        route_tables = ec2.describe_route_tables({filters:[{name:'tag-value',values:['TestVpc']}],}).route_tables
+        filter_tag_value = {name: 'tag-value', values: ['TestVpc']}
+        vpcs = ec2.describe_vpcs({filters:[filter_tag_value],}).vpcs
+        subnets = ec2.describe_subnets({filters:[filter_tag_value],}).subnets
+        internet_gateways = ec2.describe_internet_gateways({filters:[filter_tag_value],}).internet_gateways
+        route_tables = ec2.describe_route_tables({filters:[filter_tag_value],}).route_tables
 
         # ルートテーブルを削除する
         route_tables.each do |route_table|
@@ -109,10 +114,10 @@ module VPC
           ec2.delete_vpc({vpc_id:vpc.vpc_id})
         end
 
-        ret[:vpc_id] = ec2.describe_vpcs({filters:[{name:'tag-value',values:['TestVpc']}],}).vpcs
-        ret[:subnet_id] = ec2.describe_subnets({filters:[{name:'tag-value',values:['TestVpc']}],}).subnets
-        ret[:internet_gateway_id] = ec2.describe_internet_gateways({filters:[{name:'tag-value',values:['TestVpc']}],}).internet_gateways
-        ret[:route_table_id] = ec2.describe_route_tables({filters:[{name:'tag-value',values:['TestVpc']}],}).route_tables
+        ret[:vpc_id] = ec2.describe_vpcs({filters:[filter_tag_value],}).vpcs
+        ret[:subnet_id] = ec2.describe_subnets({filters:[filter_tag_value],}).subnets
+        ret[:internet_gateway_id] = ec2.describe_internet_gateways({filters:[filter_tag_value],}).internet_gateways
+        ret[:route_table_id] = ec2.describe_route_tables({filters:[filter_tag_value],}).route_tables
         ret
       rescue Exception => e
         puts "Error occurred (#{e.class})"
