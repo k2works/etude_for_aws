@@ -2,7 +2,7 @@ require 'dotenv'
 
 module VPC
   class SimpleVpc
-    def self.create
+    def create
       begin
         ret = {}
         Dotenv.load
@@ -64,7 +64,7 @@ module VPC
       end
     end
 
-    def self.destroy
+    def destroy
       begin
         ret = {}
         Dotenv.load
