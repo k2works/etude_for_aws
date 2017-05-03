@@ -1,6 +1,16 @@
 require 'etude_for_aws'
 
 namespace :VPC do
+  desc 'シンプルなVPCを作成する'
+  task :create_simple_vpc do
+    VPC::SimpleVpc.new.create
+  end
+
+  desc 'シンプルなVPCを削除する'
+  task :destroy_simple_vpc do
+    VPC::SimpleVpc.new.destroy
+  end
+
   desc '１つのアベイラビリティゾーンに１つのパブリックサブネットVPCを作成する'
   task :create_type01_vpc do
     VPC::OneAzOnePublicSubnetVpc.new.create
