@@ -27,8 +27,19 @@ module VPC
       subnet = Aws::EC2::Subnet.new(subnet_id)
       subnet.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
 
+      # インターネットゲートウェイを作成する
+      resp = ec2.create_internet_gateway
+      internet_gateway_id = resp.internet_gateway.internet_gateway_id
+      ec2.attach_internet_gateway({
+          internet_gateway_id: internet_gateway_id,
+          vpc_id: vpc_id
+                                  })
+      internet_gateway = Aws::EC2::InternetGateway.new(internet_gateway_id)
+      internet_gateway.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
+
       ret[:vpc_id] = vpc_id
       ret[:subnet_id] = subnet_id
+      ret[:internet_gateway_id] = internet_gateway_id
       ret
     end
 
@@ -37,17 +48,29 @@ module VPC
       Dotenv.load
       ec2 = Aws::EC2::Client.new
 
-      # VPCを削除する
+      vpc_id = ec2.describe_vpcs({filters:[{name:'tag-value',values:['TestVpc']}],}).vpcs[0].vpc_id
       subnet_id = ec2.describe_subnets({filters:[{name:'tag-value',values:['TestVpc']}],}).subnets[0].subnet_id
-      ec2.delete_subnet({subnet_id:subnet_id})
+      internet_gateway_id = ec2.describe_internet_gateways({filters:[{name:'tag-value',values:['TestVpc']}],}).internet_gateways[0].internet_gateway_id
+
+      # インターネットゲートウェイを削除する
+      ec2.detach_internet_gateway({
+                                      internet_gateway_id: internet_gateway_id,
+                                      vpc_id: vpc_id
+                                  })
+      resp = ec2.delete_internet_gateway({internet_gateway_id:internet_gateway_id})
+      internet_gateway_id = resp
 
       # サブネットを削除する
-      vpc_id = ec2.describe_vpcs({filters:[{name:'tag-value',values:['TestVpc']}],}).vpcs[0].vpc_id
-      ec2.delete_vpc({vpc_id:vpc_id})
-      vpc_id
+      resp = ec2.delete_subnet({subnet_id:subnet_id})
+      subnet_id = resp
 
-      ret[:vpc_id] = vpc_id
-      ret[:subnet_id] = subnet_id
+      # VPCを削除する
+      resp = ec2.delete_vpc({vpc_id:vpc_id})
+      vpc_id = resp
+
+      ret[:vpc_id] = vpc_id.to_s
+      ret[:subnet_id] = subnet_id.to_s
+      ret[:internet_gateway_id] = internet_gateway_id.to_s
       ret
     end
   end

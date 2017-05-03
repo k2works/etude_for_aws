@@ -140,18 +140,20 @@ end
 
 RSpec.describe VPC::SimpleVpc do
   describe '#create' do
-    it 'return create vpc id,subnet_id' do
+    it 'vpc,subnet,internet_gateway' do
       ret = VPC::SimpleVpc.create
       expect(ret[:vpc_id]).not_to be_nil
       expect(ret[:subnet_id]).not_to be_nil
+      expect(ret[:internet_gateway_id]).not_to be_nil
     end
   end
 
   describe '#destroy' do
-    it 'return delete vpc id,subnet id' do
+    it 'vpc,subnet,internet_gateway' do
       ret = VPC::SimpleVpc.destroy
-      expect(ret[:vpc_id]).not_to be_nil
-      expect(ret[:subnet_id]).not_to be_nil
+      expect(ret[:vpc_id]).to eq('#<struct Aws::EmptyStructure>')
+      expect(ret[:subnet_id]).to eq('#<struct Aws::EmptyStructure>')
+      expect(ret[:internet_gateway_id]).to eq('#<struct Aws::EmptyStructure>')
     end
   end
 end
