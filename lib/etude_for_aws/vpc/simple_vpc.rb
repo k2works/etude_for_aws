@@ -37,9 +37,26 @@ module VPC
       internet_gateway = Aws::EC2::InternetGateway.new(internet_gateway_id)
       internet_gateway.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
 
+      # ルートテーブルを作成する
+      resp = ec2.create_route_table({
+          vpc_id: vpc_id
+                                    })
+      route_table_id = resp.route_table.route_table_id
+      ec2.associate_route_table({
+          route_table_id: route_table_id,
+          subnet_id: subnet_id
+                                })
+      route_table = Aws::EC2::RouteTable.new(route_table_id)
+      route_table.create_tags({tags: [{key: 'Name', value: 'TestVpc'}]})
+      route_table.create_route({
+                                   destination_cidr_block:'0.0.0.0/0',
+                                   gateway_id:internet_gateway_id,
+                         })
+
       ret[:vpc_id] = vpc_id
       ret[:subnet_id] = subnet_id
       ret[:internet_gateway_id] = internet_gateway_id
+      ret[:route_table_id] = route_table_id
       ret
     end
 
@@ -51,6 +68,15 @@ module VPC
       vpc_id = ec2.describe_vpcs({filters:[{name:'tag-value',values:['TestVpc']}],}).vpcs[0].vpc_id
       subnet_id = ec2.describe_subnets({filters:[{name:'tag-value',values:['TestVpc']}],}).subnets[0].subnet_id
       internet_gateway_id = ec2.describe_internet_gateways({filters:[{name:'tag-value',values:['TestVpc']}],}).internet_gateways[0].internet_gateway_id
+      route_table_id = ec2.describe_route_tables({filters:[{name:'tag-value',values:['TestVpc']}],}).route_tables[0].route_table_id
+
+      # ルートテーブルを削除する
+      route_table_association_id = ec2.describe_route_tables({filters:[{name:'tag-value',values:['TestVpc']}],}).route_tables[0].associations[0].route_table_association_id
+      ec2.disassociate_route_table({
+                                       association_id: route_table_association_id
+                                })
+      resp = ec2.delete_route_table({route_table_id:route_table_id})
+      route_table_id = resp
 
       # インターネットゲートウェイを削除する
       ec2.detach_internet_gateway({
@@ -71,6 +97,7 @@ module VPC
       ret[:vpc_id] = vpc_id.to_s
       ret[:subnet_id] = subnet_id.to_s
       ret[:internet_gateway_id] = internet_gateway_id.to_s
+      ret[:route_table_id] = route_table_id.to_s
       ret
     end
   end
