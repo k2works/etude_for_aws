@@ -140,14 +140,18 @@ end
 
 RSpec.describe VPC::SimpleVpc do
   describe '#create' do
-    it 'return create vpc id' do
-      expect(VPC::SimpleVpc.create).not_to be_nil
+    it 'return create vpc id,subnet_id' do
+      ret = VPC::SimpleVpc.create
+      expect(ret[:vpc_id]).not_to be_nil
+      expect(ret[:subnet_id]).not_to be_nil
     end
   end
 
   describe '#destroy' do
-    it 'return delete vpc id' do
-      expect(VPC::SimpleVpc.destroy).not_to be_nil
+    it 'return delete vpc id,subnet id' do
+      ret = VPC::SimpleVpc.destroy
+      expect(ret[:vpc_id]).not_to be_nil
+      expect(ret[:subnet_id]).not_to be_nil
     end
   end
 end
