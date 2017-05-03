@@ -137,3 +137,11 @@ RSpec.describe VPC::Vpc do
       expect(vpc.config.vpc_id).to be_nil
   end
 end
+
+RSpec.describe VPC::SimpleVpc do
+  describe '#execute' do
+    it 'do something' do
+      VPC::SimpleVpc.execute
+    end
+  end
+end
