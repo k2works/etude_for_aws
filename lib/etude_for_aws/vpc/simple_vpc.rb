@@ -49,6 +49,7 @@ module VPC
 
       rescue Exception => e
         puts "Error occurred (#{e.class})"
+        throw e
       end
     end
 
@@ -69,6 +70,7 @@ module VPC
 
       rescue Exception => e
         puts "Error occurred (#{e.class})"
+        throw e
       end
     end
 
@@ -98,7 +100,6 @@ module VPC
                                     vpc_id: @vpc_id,
                                 })
       subnet_id = resp.subnet.subnet_id
-      ec2.wait_until(:subnet_available, {subnet_ids: [subnet_id]})
       ec2.create_tags(resources:[subnet_id],tags: @config.tags)
       @subnet_id = subnet_id
     end
@@ -188,6 +189,60 @@ module VPC
 
     def get_ec2_client
       @config.ec2
+    end
+
+  end
+
+  class SimpleVpcConfigureStub < SimpleVpcConfigure
+    def initialize
+      super
+      @ec2 = Aws::EC2::Client.new(stub_responses: true)
+    end
+  end
+
+  class SimpleVpcStub < SimpleVpc
+    def initialize
+      @config = VPC::SimpleVpcConfigureStub.new
+    end
+
+    def set_delete_collection
+      @config.ec2.stub_responses(:describe_vpcs, {
+          vpcs:[
+              { vpc_id: "String" },
+          ],
+      })
+      @config.ec2.stub_responses(:describe_subnets, {
+          subnets:[
+              { subnet_id: "String" }
+          ],
+      })
+      @config.ec2.stub_responses(:describe_internet_gateways, {
+          internet_gateways:[
+              { internet_gateway_id: "String" },
+          ],
+      })
+      @config.ec2.stub_responses(:describe_route_tables, {
+          route_tables:[
+              { route_table_id: "String" },
+          ],
+      })
+      super
+    end
+
+    def set_delete_ids
+      @config.ec2.stub_responses(:describe_vpcs, {
+          vpcs:[],
+      })
+      @config.ec2.stub_responses(:describe_subnets, {
+          subnets:[],
+      })
+      @config.ec2.stub_responses(:describe_internet_gateways, {
+          internet_gateways:[],
+      })
+      @config.ec2.stub_responses(:describe_route_tables, {
+          route_tables:[],
+      })
+      super
     end
 
   end
