@@ -46,7 +46,7 @@ module VPC
 
         delete_subnets
 
-        delete_vpcs
+        delete_vpc
 
       rescue Exception => e
         puts "Error occurred (#{e.class})"
@@ -69,7 +69,7 @@ module VPC
       end
     end
 
-    def delete_vpcs
+    def delete_vpc
       @config.ec2.delete_vpc({vpc_id: @vpc_id}) unless @vpc_id.nil?
       @vpc_id = nil
     end
