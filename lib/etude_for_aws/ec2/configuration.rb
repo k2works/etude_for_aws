@@ -1,6 +1,7 @@
 module EC2
   class Configuration
     include CertificationHelper
+    include ConfigurationHelper
 
     attr_accessor :vpc_id,
                   :subnet_id,

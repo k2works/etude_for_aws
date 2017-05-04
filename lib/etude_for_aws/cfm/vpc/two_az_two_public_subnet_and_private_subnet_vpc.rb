@@ -1,8 +1,8 @@
-module VPC
-  class TwoAzOnePublicSubnetAndPrivateSubnetVpc < Vpc
+module CFM
+  class TwoAzTwoPublicSubnetAndPrivateSubnetVpc < Vpc
     def initialize
       super
-      template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_06']
+      template_file = @config.get_template_file(CFM::Vpc::TYPE.fetch(7))
       file = get_template_full_path(template_file)
       @config.template = File.read(file)
       @config.parameters = [
@@ -18,23 +18,9 @@ module VPC
           },
       ]
     end
-
-    def get_subnet_info(logical_resource_id,az)
-      info = {}
-      info[:subnet_id] = @cfm.describe_stack_resource({stack_name: @config.stack_name, logical_resource_id: logical_resource_id}).stack_resource_detail.physical_resource_id
-      info[:az] = az
-      info
-    end
-
-    def get_subnet_infos
-      infos = []
-      infos << get_subnet_info('PublicSubnet1a',@config.azs[0])
-      infos << get_subnet_info('PrivateSubnet1c',@config.azs[1])
-      infos
-    end
   end
 
-  class TwoAzOnePublicSubnetAndPrivateSubnetVpcStub < VpcStub
+  class TwoAzTwoPublicSubnetAndPrivateSubnetVpcStub < VpcStub
     def get_subnet_info
       info = {}
       info[:subnet_id] = 'DUMMY_SUBNET_ID'

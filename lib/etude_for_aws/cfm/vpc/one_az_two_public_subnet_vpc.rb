@@ -1,8 +1,8 @@
-module VPC
+module CFM
   class OneAzTwoPublicSubnetVpc < Vpc
     def initialize
       super
-      template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_02']
+      template_file = @config.get_template_file(CFM::Vpc::TYPE.fetch(2))
       file = get_template_full_path(template_file)
       @config.template = File.read(file)
       @config.parameters = [

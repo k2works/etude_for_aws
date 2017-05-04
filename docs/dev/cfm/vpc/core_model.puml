@@ -5,15 +5,17 @@ package Aws {
 }
 
 Interface CertificationHelper
+Interface ConfigurationHelper
 
-package VPC {
+package CFM {
   class Vpc {
     create()
     destroy()
   }
   CertificationHelper <|-- Configuration
-  Vpc o-u- CloudFormation
-  Vpc o-l- Configuration
+  ConfigurationHelper <|-- Configuration
+  Configuration -l-> CloudFormation
+  Vpc *-l- Configuration
   Vpc <|-- NullVpc
   Vpc <|-- OneAzOnePublicSubnetVpc
   Vpc <|-- OneAzTwoPublicAndPrivateSubnetVpc
