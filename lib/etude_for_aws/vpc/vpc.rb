@@ -40,8 +40,6 @@ module VPC
     def destroy
       begin
 
-        set_delete_collection
-
         delete_route_tables
 
         delete_internet_gateway
@@ -49,8 +47,6 @@ module VPC
         delete_subnets
 
         delete_vpcs
-
-        set_delete_ids
 
       rescue Exception => e
         puts "Error occurred (#{e.class})"
@@ -128,10 +124,11 @@ module VPC
       @config.ec2
     end
 
-    def set_delete_ids
+
+    def set_before_stub
     end
 
-    def set_delete_collection
+    def set_after_stub
     end
 
   end
@@ -142,7 +139,13 @@ module VPC
       @config = VPC::ConfigurationStub.new
     end
 
-    def set_delete_collection
+    def destroy
+      set_before_stub
+      super
+      set_after_stub
+    end
+
+    def set_before_stub
       @config.ec2.stub_responses(:describe_vpcs, {
           vpcs:[
               { vpc_id: "String" },
@@ -166,7 +169,7 @@ module VPC
       super
     end
 
-    def set_delete_ids
+    def set_after_stub
       @config.ec2.stub_responses(:describe_vpcs, {
           vpcs:[],
       })
