@@ -1,5 +1,3 @@
-require 'aws-sdk'
-
 module CFM
   class Vpc
     attr_reader :config
@@ -16,7 +14,7 @@ module CFM
 
     def initialize
       @config = Configuration.new
-      @cfm = Aws::CloudFormation::Client.new
+      @cfm = @config.create_client
       set_vpc_id
     end
 

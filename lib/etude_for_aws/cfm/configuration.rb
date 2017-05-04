@@ -25,5 +25,9 @@ module CFM
     def get_template_file(type)
       get_yaml_template_file(type)
     end
+
+    def create_client
+      Aws::CloudFormation::Client.new
+    end
   end
 end
