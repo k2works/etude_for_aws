@@ -1,4 +1,4 @@
-module VPC
+module CFM
   class NullVpc < Vpc
     def initialize
       super

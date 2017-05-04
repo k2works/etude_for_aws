@@ -1,7 +1,7 @@
-require 'aws-sdk'
-
-module VPC
+module CFM
   class Vpc
+    include EC2::VpcInterface
+
     attr_reader :config
 
     TYPE = {
@@ -16,7 +16,7 @@ module VPC
 
     def initialize
       @config = Configuration.new
-      @cfm = Aws::CloudFormation::Client.new
+      @cfm = @config.create_client
       set_vpc_id
     end
 
