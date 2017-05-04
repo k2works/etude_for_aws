@@ -1,29 +1,7 @@
 module VPC
-  class SimpleVpcConfigure
-    include CertificationHelper
-    include ConfigurationHelper
+  class Vpc
+    include EC2::VpcInterface
 
-    attr_reader :vpc_cidr_block,
-                :subnet_cidr_block,
-                :destination_cidr_block,
-                :tags,
-                :filter_tag_value,
-                :ec2
-
-    def initialize
-      aws_certificate
-
-      @vpc_cidr_block = '10.0.0.0/16'
-      @subnet_cidr_block = '10.0.0.0/24'
-      @destination_cidr_block = '0.0.0.0/0'
-      tag_value = 'TestVpc'
-      @tags = [{key: 'Name', value: tag_value}]
-      @filter_tag_value = {name: 'tag-value', values: [tag_value]}
-      @ec2 = Aws::EC2::Client.new
-    end
-  end
-
-  class SimpleVpc
     attr_reader :vpc_id,
                 :subnet_id,
                 :internet_gateway_id,
@@ -31,7 +9,7 @@ module VPC
                 :config
 
     def initialize
-      @config = VPC::SimpleVpcConfigure.new
+      @config = VPC::Configuration.new
     end
 
     def create
@@ -191,16 +169,9 @@ module VPC
 
   end
 
-  class SimpleVpcConfigureStub < SimpleVpcConfigure
+  class VpcStub < Vpc
     def initialize
-      super
-      @ec2 = Aws::EC2::Client.new(stub_responses: true)
-    end
-  end
-
-  class SimpleVpcStub < SimpleVpc
-    def initialize
-      @config = VPC::SimpleVpcConfigureStub.new
+      @config = VPC::ConfigurationStub.new
     end
 
     def set_delete_collection
