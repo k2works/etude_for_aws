@@ -1,6 +1,7 @@
 require 'etude_for_aws/version'
 require 'etude_for_aws/helpers/certification_helper'
 require 'etude_for_aws/helpers/configuration_helper'
+require 'etude_for_aws/ec2/vpc_interface'
 require 'etude_for_aws/cfm/configuration'
 require 'etude_for_aws/cfm/vpc/vpc'
 require 'etude_for_aws/cfm/vpc/null_vpc'

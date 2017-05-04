@@ -5,12 +5,17 @@ package Aws {
   class EC2::Resource
 }
 
-package VPC {
+package CFM {
+  class CFM::Vpc
 }
 
 Interface CertificationHelper
+Interface ConfigurationHelper
 
 package EC2 {
+  Interface VpcInterface
+  VpcInterface <|-u- CFM::Vpc
+
   class Ec2 {
     create()
     destroy()
@@ -19,9 +24,10 @@ package EC2 {
     reboot()
   }
   CertificationHelper <|-- Configuration
-  Configuration o-u- EC2::Client
-  Configuration o-u- EC2::Resource
-  Ec2 -l-> VPC
+  ConfigurationHelper <|-- Configuration
+  Configuration -u-> EC2::Client
+  Configuration -u-> EC2::Resource
+  Ec2 -r-> VpcInterface
   Ec2 "1" *-l- "1" Configuration
   Ec2 "1" *-- "1..*" Ec2Instance
   Ec2 "1" *-- "1" KeyPair

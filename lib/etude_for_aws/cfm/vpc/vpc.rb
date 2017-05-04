@@ -1,5 +1,7 @@
 module CFM
   class Vpc
+    include EC2::VpcInterface
+
     attr_reader :config
 
     TYPE = {
