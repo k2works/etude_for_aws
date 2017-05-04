@@ -1,5 +1,5 @@
 require 'spec_helper'
-include VpcSpecHelper
+include CfmVpcSpecHelper
 
 RSpec.describe EC2::Ec2 do
   SERVICE_STUB = true

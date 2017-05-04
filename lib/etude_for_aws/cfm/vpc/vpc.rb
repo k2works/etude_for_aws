@@ -1,6 +1,6 @@
 require 'aws-sdk'
 
-module VPC
+module CFM
   class Vpc
     attr_reader :config
 

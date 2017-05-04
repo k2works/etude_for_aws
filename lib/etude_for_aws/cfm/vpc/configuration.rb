@@ -1,6 +1,6 @@
 require 'yaml'
 
-module VPC
+module CFM
   class Configuration
     include CertificationHelper
 
@@ -17,13 +17,13 @@ module VPC
     def initialize
       aws_certificate
       @yaml = YAML.load_file('config.yml')
-      @stack_name = @yaml['DEV']['VPC']['STACK_NAME']
-      @stack_tag_value = @yaml['DEV']['VPC']['TAG_VALUE']
-      @template_path = @yaml['DEV']['VPC']['TEMPLATE_PATH']
+      @stack_name = @yaml['DEV']['CFM']['VPC']['STACK_NAME']
+      @stack_tag_value = @yaml['DEV']['CFM']['VPC']['TAG_VALUE']
+      @template_path = @yaml['DEV']['CFM']['VPC']['TEMPLATE_PATH']
       @azs = []
-      @azs << @yaml['DEV']['VPC']['TEMPLATE_PARAMS_AZ1']
-      @azs << @yaml['DEV']['VPC']['TEMPLATE_PARAMS_AZ2']
-      @azs << @yaml['DEV']['VPC']['TEMPLATE_PARAMS_AZ3']
+      @azs << @yaml['DEV']['CFM']['VPC']['TEMPLATE_PARAMS_AZ1']
+      @azs << @yaml['DEV']['CFM']['VPC']['TEMPLATE_PARAMS_AZ2']
+      @azs << @yaml['DEV']['CFM']['VPC']['TEMPLATE_PARAMS_AZ3']
     end
   end
 end

@@ -1,8 +1,8 @@
-module VPC
-  class OneAzTwoPublicSubnetVpc < Vpc
+module CFM
+  class OneAzTwoPublicAndPrivateSubnetVpc < Vpc
     def initialize
       super
-      template_file = @config.yaml['DEV']['VPC']['TEMPLATE_FILE_TYPE_02']
+      template_file = @config.yaml['DEV']['CFM']['VPC']['TEMPLATE_FILE_TYPE_03']
       file = get_template_full_path(template_file)
       @config.template = File.read(file)
       @config.parameters = [
@@ -23,13 +23,13 @@ module VPC
 
     def get_subnet_infos
       infos = []
-      infos << get_subnet_info('PublicSubnet1a')
-      infos << get_subnet_info('PublicSubnet2a')
+      infos << get_subnet_info('PublicSubnet')
+      infos << get_subnet_info('PrivateSubnet')
       infos
     end
   end
 
-  class OneAzTwoPublicSubnetVpcStub < VpcStub
+  class OneAzTwoPublicAndPrivateSubnetVpcStub < VpcStub
     def get_subnet_info
       info = {}
       info[:subnet_id] = 'DUMMY_SUBNET_ID'

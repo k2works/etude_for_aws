@@ -10,46 +10,46 @@ RSpec.configure do |config|
   end
 end
 
-module VpcSpecHelper
+module CfmVpcSpecHelper
   def create_vpc_instance(type)
     case type
       when :ONE_AZ_ONE_PUB
-        return VPC::OneAzOnePublicSubnetVpc.new
+        return CFM::OneAzOnePublicSubnetVpc.new
       when :ONE_AZ_TWO_PUB
-        return VPC::OneAzTwoPublicSubnetVpc.new
+        return CFM::OneAzTwoPublicSubnetVpc.new
       when :ONE_AZ_ONE_PUB_PRI
-        return VPC::OneAzTwoPublicAndPrivateSubnetVpc.new
+        return CFM::OneAzTwoPublicAndPrivateSubnetVpc.new
       when :TWO_AZ_TWO_PRI
-        return VPC::TwoAzTwoPrivateSubnetVpc.new
+        return CFM::TwoAzTwoPrivateSubnetVpc.new
       when :TWO_AZ_TWO_PUB
-        return VPC::TwoAzTwoPublicSubnetVpc.new
+        return CFM::TwoAzTwoPublicSubnetVpc.new
       when :TWO_AZ_ONE_PUB_RPI
-        return VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new
+        return CFM::TwoAzOnePublicSubnetAndPrivateSubnetVpc.new
       when :TWO_AZ_TWO_PUB_PRI
-        return VPC::TwoAzTwoPublicSubnetAndPrivateSubnetVpc.new
+        return CFM::TwoAzTwoPublicSubnetAndPrivateSubnetVpc.new
       else
-        return VPC::NullVpc.new
+        return CFM::NullVpc.new
     end
   end
 
   def create_vpc_instance_stub(type)
     case type
       when :ONE_AZ_ONE_PUB
-        return VPC::OneAzOnePublicSubnetVpcStub.new
+        return CFM::OneAzOnePublicSubnetVpcStub.new
       when :ONE_AZ_TWO_PUB
-        return VPC::OneAzTwoPublicSubnetVpcStub.new
+        return CFM::OneAzTwoPublicSubnetVpcStub.new
       when :ONE_AZ_ONE_PUB_PRI
-        return VPC::OneAzTwoPublicAndPrivateSubnetVpcStub.new
+        return CFM::OneAzTwoPublicAndPrivateSubnetVpcStub.new
       when :TWO_AZ_TWO_PRI
-        return VPC::TwoAzTwoPrivateSubnetVpcStub.new
+        return CFM::TwoAzTwoPrivateSubnetVpcStub.new
       when :TWO_AZ_TWO_PUB
-        return VPC::TwoAzTwoPublicSubnetVpcStub.new
+        return CFM::TwoAzTwoPublicSubnetVpcStub.new
       when :TWO_AZ_ONE_PUB_RPI
-        return VPC::TwoAzOnePublicSubnetAndPrivateSubnetVpcStub.new
+        return CFM::TwoAzOnePublicSubnetAndPrivateSubnetVpcStub.new
       when :TWO_AZ_TWO_PUB_PRI
-        return VPC::TwoAzTwoPublicSubnetAndPrivateSubnetVpcStub.new
+        return CFM::TwoAzTwoPublicSubnetAndPrivateSubnetVpcStub.new
       else
-        return VPC::NullVpc.new
+        return CFM::NullVpc.new
     end
   end
 
