@@ -19,7 +19,7 @@ module VPC
       @subnet_cidr_block = '10.0.0.0/24'
       @destination_cidr_block = '0.0.0.0/0'
       tag_value = 'TestVpc'
-      @tags = {tags: [{key: 'Name', value: tag_value}]}
+      @tags = [{key: 'Name', value: tag_value}]
       @filter_tag_value = {name: 'tag-value', values: [tag_value]}
       @ec2 = Aws::EC2::Client.new
     end
@@ -81,8 +81,7 @@ module VPC
       )
       vpc_id = resp.vpc.vpc_id
       ec2.wait_until(:vpc_exists, {vpc_ids: [vpc_id]})
-      vpc = create_vpc_instance(vpc_id)
-      vpc.create_tags(@config.tags)
+      ec2.create_tags(resources:[vpc_id],tags: @config.tags)
       @vpc_id = vpc_id
     end
 
@@ -100,8 +99,7 @@ module VPC
                                 })
       subnet_id = resp.subnet.subnet_id
       ec2.wait_until(:subnet_available, {subnet_ids: [subnet_id]})
-      subnet = create_subnet_instance(subnet_id)
-      subnet.create_tags(@config.tags)
+      ec2.create_tags(resources:[subnet_id],tags: @config.tags)
       @subnet_id = subnet_id
     end
 
@@ -119,8 +117,7 @@ module VPC
                                        internet_gateway_id: internet_gateway_id,
                                        vpc_id: @vpc_id
                                    })
-      internet_gateway = create_internet_gateway_instance(internet_gateway_id)
-      internet_gateway.create_tags(@config.tags)
+      ec2.create_tags(resources:[internet_gateway_id],tags: @config.tags)
       @internet_gateway_id = internet_gateway_id
     end
 
@@ -147,12 +144,12 @@ module VPC
                                      route_table_id: route_table_id,
                                      subnet_id: @subnet_id
                                  })
-      route_table = create_route_table_instance(route_table_id)
-      route_table.create_tags(@config.tags)
-      route_table.create_route({
+      ec2.create_tags(resources:[route_table_id],tags: @config.tags)
+      ec2.create_route({
                                    destination_cidr_block: @config.destination_cidr_block,
                                    gateway_id: @internet_gateway_id,
-                               })
+                                   route_table_id: route_table_id,
+                       })
       @route_table_id = route_table_id
     end
 
@@ -189,26 +186,9 @@ module VPC
       @route_tables = ec2.describe_route_tables({filters: [filter_tag_value], }).route_tables
     end
 
-    def create_vpc_instance(vpc_id)
-      Aws::EC2::Vpc.new(vpc_id)
-    end
-
-    def create_subnet_instance(subnet_id)
-      Aws::EC2::Subnet.new(subnet_id)
-    end
-
-    def create_internet_gateway_instance(internet_gateway_id)
-      Aws::EC2::InternetGateway.new(internet_gateway_id)
-    end
-
-    def create_route_table_instance(route_table_id)
-      Aws::EC2::RouteTable.new(route_table_id)
-    end
-
     def get_ec2_client
       @config.ec2
     end
 
   end
-
 end
