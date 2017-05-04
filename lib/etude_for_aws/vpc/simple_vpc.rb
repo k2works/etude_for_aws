@@ -2,6 +2,9 @@ require 'dotenv'
 
 module VPC
   class SimpleVpcConfigure
+    include CertificationHelper
+    include ConfigurationHelper
+
     attr_reader :vpc_cidr_block,
                 :subnet_cidr_block,
                 :destination_cidr_block,
@@ -10,13 +13,14 @@ module VPC
                 :ec2
 
     def initialize
+      aws_certificate
+
       @vpc_cidr_block = '10.0.0.0/16'
       @subnet_cidr_block = '10.0.0.0/24'
       @destination_cidr_block = '0.0.0.0/0'
       tag_value = 'TestVpc'
       @tags = {tags: [{key: 'Name', value: tag_value}]}
       @filter_tag_value = {name: 'tag-value', values: [tag_value]}
-      Dotenv.load
       @ec2 = Aws::EC2::Client.new
     end
   end
@@ -70,14 +74,14 @@ module VPC
 
     private
     def create_vpc
-      ec2 = @config.ec2
+      ec2 = get_ec2_client
       resp = ec2.create_vpc({
                                  cidr_block: @config.vpc_cidr_block
                              }
       )
       vpc_id = resp.vpc.vpc_id
       ec2.wait_until(:vpc_exists, {vpc_ids: [vpc_id]})
-      vpc = Aws::EC2::Vpc.new(vpc_id)
+      vpc = create_vpc_instance(vpc_id)
       vpc.create_tags(@config.tags)
       @vpc_id = vpc_id
     end
@@ -89,14 +93,14 @@ module VPC
     end
 
     def create_subnet
-      ec2 = @config.ec2
+      ec2 = get_ec2_client
       resp = ec2.create_subnet({
                                     cidr_block: @config.subnet_cidr_block,
                                     vpc_id: @vpc_id,
                                 })
       subnet_id = resp.subnet.subnet_id
       ec2.wait_until(:subnet_available, {subnet_ids: [subnet_id]})
-      subnet = Aws::EC2::Subnet.new(subnet_id)
+      subnet = create_subnet_instance(subnet_id)
       subnet.create_tags(@config.tags)
       @subnet_id = subnet_id
     end
@@ -108,14 +112,14 @@ module VPC
     end
 
     def create_internet_gateway
-      ec2 = @config.ec2
+      ec2 = get_ec2_client
       resp = ec2.create_internet_gateway
       internet_gateway_id = resp.internet_gateway.internet_gateway_id
       ec2.attach_internet_gateway({
                                        internet_gateway_id: internet_gateway_id,
                                        vpc_id: @vpc_id
                                    })
-      internet_gateway = Aws::EC2::InternetGateway.new(internet_gateway_id)
+      internet_gateway = create_internet_gateway_instance(internet_gateway_id)
       internet_gateway.create_tags(@config.tags)
       @internet_gateway_id = internet_gateway_id
     end
@@ -123,7 +127,7 @@ module VPC
     def delete_internet_gateways
       @vpcs.each do |vpc|
         @internet_gateways.each do |internet_gateway|
-          ec2 = @config.ec2
+          ec2 = get_ec2_client
           ec2.detach_internet_gateway({
                                            internet_gateway_id: internet_gateway.internet_gateway_id,
                                            vpc_id: vpc.vpc_id
@@ -134,7 +138,7 @@ module VPC
     end
 
     def create_route_table
-      ec2 = @config.ec2
+      ec2 = get_ec2_client
       resp = ec2.create_route_table({
                                          vpc_id: @vpc_id
                                      })
@@ -143,7 +147,7 @@ module VPC
                                      route_table_id: route_table_id,
                                      subnet_id: @subnet_id
                                  })
-      route_table = Aws::EC2::RouteTable.new(route_table_id)
+      route_table = create_route_table_instance(route_table_id)
       route_table.create_tags(@config.tags)
       route_table.create_route({
                                    destination_cidr_block: @config.destination_cidr_block,
@@ -153,7 +157,7 @@ module VPC
     end
 
     def delete_route_tables
-      ec2 = @config.ec2
+      ec2 = get_ec2_client
       @route_tables.each do |route_table|
         route_table.associations.each do |association|
           ec2.disassociate_route_table({
@@ -169,7 +173,7 @@ module VPC
 
     def set_delete_ids
       filter_tag_value = @config.filter_tag_value
-      ec2 = @config.ec2
+      ec2 = get_ec2_client
       @vpc_id = ec2.describe_vpcs({filters: [filter_tag_value], }).vpcs
       @subnet_id = ec2.describe_subnets({filters: [filter_tag_value], }).subnets
       @internet_gateway_id = ec2.describe_internet_gateways({filters: [filter_tag_value], }).internet_gateways
@@ -178,11 +182,33 @@ module VPC
 
     def set_delete_collection
       filter_tag_value = @config.filter_tag_value
-      ec2 = @config.ec2
+      ec2 = get_ec2_client
       @vpcs = ec2.describe_vpcs({filters: [filter_tag_value], }).vpcs
       @subnets = ec2.describe_subnets({filters: [filter_tag_value], }).subnets
       @internet_gateways = ec2.describe_internet_gateways({filters: [filter_tag_value], }).internet_gateways
       @route_tables = ec2.describe_route_tables({filters: [filter_tag_value], }).route_tables
     end
+
+    def create_vpc_instance(vpc_id)
+      Aws::EC2::Vpc.new(vpc_id)
+    end
+
+    def create_subnet_instance(subnet_id)
+      Aws::EC2::Subnet.new(subnet_id)
+    end
+
+    def create_internet_gateway_instance(internet_gateway_id)
+      Aws::EC2::InternetGateway.new(internet_gateway_id)
+    end
+
+    def create_route_table_instance(route_table_id)
+      Aws::EC2::RouteTable.new(route_table_id)
+    end
+
+    def get_ec2_client
+      @config.ec2
+    end
+
   end
+
 end
