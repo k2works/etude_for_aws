@@ -81,15 +81,15 @@ RSpec.describe VPC::Vpc do
     end
 
     it 'subnet' do
-      expect(vpc.subnet_id).not_to be_nil
+      expect(vpc.subnets).not_to be_nil
     end
 
     it 'internet_gateway' do
-      expect(vpc.internet_gateway_id).not_to be_nil
+      expect(vpc.internet_gateway).not_to be_nil
     end
 
     it 'route_table' do
-      expect(vpc.route_table_id).not_to be_nil
+      expect(vpc.route_tables).not_to be_nil
     end
   end
 
@@ -103,22 +103,22 @@ RSpec.describe VPC::Vpc do
 
       it 'vpc' do
         vpc.destroy
-        expect(vpc.vpc_id).to be_empty
+        expect(vpc.vpc_id).to be_nil
       end
 
       it 'subnet' do
         vpc.destroy
-        expect(vpc.subnet_id).to be_empty
+        expect(vpc.subnets).to be_empty
       end
 
       it 'internet_gateway' do
         vpc.destroy
-        expect(vpc.internet_gateway_id).to be_empty
+        expect(vpc.internet_gateway).to be_nil
       end
 
       it 'route_table' do
         vpc.destroy
-        expect(vpc.route_table_id).to be_empty
+        expect(vpc.route_tables).to be_empty
       end
     end
 
