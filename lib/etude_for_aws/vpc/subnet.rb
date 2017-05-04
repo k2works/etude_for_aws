@@ -4,13 +4,17 @@ module VPC
 
     def initialize(vpc)
       ec2 = vpc.config.ec2
-      resp = ec2.create_subnet({
-                                   cidr_block: vpc.config.subnet_cidr_block,
-                                   vpc_id: vpc.vpc_id,
-                               })
-      subnet_id = resp.subnet.subnet_id
-      ec2.create_tags(resources:[subnet_id],tags: vpc.config.tags)
-      @subnet_id = subnet_id
+      if vpc.subnet_id.nil?
+        resp = ec2.create_subnet({
+                                     cidr_block: vpc.config.subnet_cidr_block,
+                                     vpc_id: vpc.vpc_id,
+                                 })
+        subnet_id = resp.subnet.subnet_id
+        ec2.create_tags(resources:[subnet_id],tags: vpc.config.tags)
+        @subnet_id = subnet_id
+      else
+        @subnet_id = vpc.subnet_id
+      end
     end
 
     def delete(vpc)

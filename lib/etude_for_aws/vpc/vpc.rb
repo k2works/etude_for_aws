@@ -3,6 +3,8 @@ module VPC
     include EC2::VpcInterface
 
     attr_reader :vpc_id,
+                :subnet_id,
+                :internet_gateway_id,
                 :route_table_id,
                 :config
 
@@ -17,7 +19,24 @@ module VPC
         @vpc_id = vpc.vpc_id
       end
       @subnets = []
+      subnets = @config.ec2.describe_subnets({filters: [filter_tag_value], }).subnets
+      subnets.each do |subnet|
+        @subnet_id = subnet.subnet_id
+        @subnets << VPC::Subnet.new(self)
+      end
+
+      internet_gateways = @config.ec2.describe_internet_gateways({filters: [filter_tag_value], }).internet_gateways
+      internet_gateways.each do |internet_gateway|
+        @internet_gateway_id = internet_gateway.internet_gateway_id
+        @internet_gateway = VPC::InternetGateway.new(self)
+      end
+
       @route_tables = []
+      route_tables = @config.ec2.describe_route_tables({filters: [filter_tag_value], }).route_tables
+      route_tables.each do |route_table|
+        @route_table_id = route_table.route_table_id
+        @route_tables << VPC::RouteTable.new(self)
+      end
     end
 
     def create
