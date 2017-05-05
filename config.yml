@@ -15,6 +15,11 @@ DEV:
       TEMPLATE_PARAMS_AZ2: 'us-west-2b'
       TEMPLATE_PARAMS_AZ3: 'us-west-2c'
       TAG_VALUE: 'test'
+  VPC:
+    VPC_NAME: 'TestVpc'
+    VPC_CIDR_BLOCK: '10.0.0.0/16'
+    SUBNET_CIDR_BLOCK: '10.0.0.0/24'
+    DESTINATION_CIDR_BLOCK: '0.0.0.0/0'
   EC2:
     SECURITY_GROUP_NAME: 'MyGroovySecurityGroup'
     SECURITY_GROUP_DESCRIPTION: 'Security group for MyGroovyInstance'

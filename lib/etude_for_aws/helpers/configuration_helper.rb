@@ -51,4 +51,20 @@ module ConfigurationHelper
         return raise
     end
   end
+
+  def get_yaml_vpc_name
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_NAME']
+  end
+
+  def get_yaml_vpc_cidr_block
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_CIDR_BLOCK']
+  end
+
+  def get_yaml_subnet_cidr_block
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNET_CIDR_BLOCK']
+  end
+
+  def get_yaml_destination_cidr_block
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['DESTINATION_CIDR_BLOCK']
+  end
 end

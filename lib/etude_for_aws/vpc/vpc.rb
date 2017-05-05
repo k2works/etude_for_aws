@@ -6,7 +6,8 @@ module VPC
                 :subnet_id,
                 :internet_gateway_id,
                 :route_table_id,
-                :config
+                :config,
+                :gateway
 
     attr_accessor :subnets,
                   :internet_gateway,
@@ -14,26 +15,25 @@ module VPC
 
     def initialize
       @config = VPC::Configuration.new
-      filter_tag_value = @config.filter_tag_value
-      @config.ec2.describe_vpcs({filters: [filter_tag_value], }).vpcs.each do |vpc|
+      @gateway = VPC::VpcApiGateway.new
+
+      @gateway.select_vpcs_by_name(@config.vpc_name).each do |vpc|
         @vpc_id = vpc.vpc_id
       end
+
       @subnets = []
-      subnets = @config.ec2.describe_subnets({filters: [filter_tag_value], }).subnets
-      subnets.each do |subnet|
+      @gateway.select_subnets_by_name(@config.vpc_name).each do |subnet|
         @subnet_id = subnet.subnet_id
         @subnets << VPC::Subnet.new(self)
       end
 
-      internet_gateways = @config.ec2.describe_internet_gateways({filters: [filter_tag_value], }).internet_gateways
-      internet_gateways.each do |internet_gateway|
+      @gateway.select_internet_gateways_by_name(@config.vpc_name).each do |internet_gateway|
         @internet_gateway_id = internet_gateway.internet_gateway_id
         @internet_gateway = VPC::InternetGateway.new(self)
       end
 
       @route_tables = []
-      route_tables = @config.ec2.describe_route_tables({filters: [filter_tag_value], }).route_tables
-      route_tables.each do |route_table|
+      @gateway.select_route_tables_by_name(@config.vpc_name).each do |route_table|
         @route_table_id = route_table.route_table_id
         @route_tables << VPC::RouteTable.new(self)
       end
@@ -94,9 +94,7 @@ module VPC
     end
 
     def create_subnets
-      ec2 = get_ec2_client
-      filter_tag_value = @config.filter_tag_value
-      subnets = ec2.describe_subnets({filters: [filter_tag_value], }).subnets
+      subnets = @gateway.select_subnets_by_name(@config.vpc_name)
       if subnets.empty?
         @subnets << VPC::Subnet.new(self)
       end
@@ -110,9 +108,7 @@ module VPC
     end
 
     def create_internet_gateway
-      ec2 = get_ec2_client
-      filter_tag_value = @config.filter_tag_value
-      internet_gateways = ec2.describe_internet_gateways({filters: [filter_tag_value], }).internet_gateways
+      internet_gateways = @gateway.select_internet_gateways_by_name(@config.vpc_name)
       if internet_gateways.empty?
         @internet_gateway = VPC::InternetGateway.new(self)
       end
@@ -124,9 +120,7 @@ module VPC
     end
 
     def create_route_table
-      ec2 = get_ec2_client
-      filter_tag_value = @config.filter_tag_value
-      route_tables = ec2.describe_route_tables({filters: [filter_tag_value], }).route_tables
+      route_tables = @gateway.select_route_tables_by_name(@config.vpc_name)
       if route_tables.empty?
         @route_tables << VPC::RouteTable.new(self)
       end
@@ -156,6 +150,7 @@ module VPC
     def initialize
       super
       @config = VPC::ConfigurationStub.new
+      @gateway = VPC::VpcApiGatewayStub.new
     end
 
     def destroy
