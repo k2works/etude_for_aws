@@ -5,6 +5,8 @@ module VPC
     attr_reader :vpc_name,
                 :vpc_cidr_block,
                 :subnet_cidr_block,
+                :subnet_cidr_block_public,
+                :subnet_cidr_block_private,
                 :destination_cidr_block,
                 :tags,
                 :filter_tag_value
@@ -13,6 +15,8 @@ module VPC
       @vpc_name = get_yaml_vpc_name
       @vpc_cidr_block = get_yaml_vpc_cidr_block
       @subnet_cidr_block = get_yaml_subnet_cidr_block
+      @subnet_cidr_block_public = get_yaml_subnet_cidr_block_public
+      @subnet_cidr_block_private = get_yaml_subnet_cidr_block_private
       @destination_cidr_block = get_yaml_destination_cidr_block
       @tags = [{key: 'Name', value: @vpc_name}]
       @filter_tag_value = {name: 'tag-value', values: [@vpc_name]}

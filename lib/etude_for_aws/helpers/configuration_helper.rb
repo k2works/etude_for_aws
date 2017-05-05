@@ -64,6 +64,14 @@ module ConfigurationHelper
     ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNET_CIDR_BLOCK']
   end
 
+  def get_yaml_subnet_cidr_block_public
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNET_CIDR_BLOCK_PUBLIC']
+  end
+
+  def get_yaml_subnet_cidr_block_private
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNET_CIDR_BLOCK_PRIVATE']
+  end
+
   def get_yaml_destination_cidr_block
     ConfigurationHelper.load_yaml_file['DEV']['VPC']['DESTINATION_CIDR_BLOCK']
   end

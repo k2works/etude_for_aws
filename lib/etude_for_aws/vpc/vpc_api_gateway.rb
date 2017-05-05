@@ -130,12 +130,20 @@ module VPC
       route_table_id
     end
 
-    def create_route(destination_cidr_block,internet_gateway_id,route_table_id)
+    def create_route_public(destination_cidr_block,internet_gateway_id,route_table_id)
       resp = @ec2.create_route({
-                            destination_cidr_block: destination_cidr_block,
-                            gateway_id: internet_gateway_id,
-                            route_table_id: route_table_id,
+                                   destination_cidr_block: destination_cidr_block,
+                                   gateway_id: internet_gateway_id,
+                                   route_table_id: route_table_id,
                         })
+      resp.return
+    end
+
+    def create_route_private(destination_cidr_block,route_table_id)
+      resp = @ec2.create_route({
+                                   destination_cidr_block: destination_cidr_block,
+                                   route_table_id: route_table_id,
+                               })
       resp.return
     end
 
