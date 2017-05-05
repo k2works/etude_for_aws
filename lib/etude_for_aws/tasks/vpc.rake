@@ -3,12 +3,14 @@ require 'etude_for_aws'
 namespace :VPC do
   desc 'VPCを作成する'
   task :create_vpc do
-    VPC::Vpc.new.create
+    vpc_director = VPC::VpcDirector.new(VPC::Vpc.new)
+    vpc_director.create
   end
 
   desc 'VPCを削除する'
   task :destroy_vpc do
-    VPC::Vpc.new.destroy
+    vpc_director = VPC::VpcDirector.new(VPC::Vpc.new)
+    vpc_director.destroy
   end
 
   desc 'シンプルなVPCを作成する'

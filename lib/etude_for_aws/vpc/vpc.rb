@@ -39,41 +39,6 @@ module VPC
       end
     end
 
-    def create
-      begin
-
-        create_vpc
-
-        create_subnets
-
-        create_internet_gateway
-
-        create_route_table
-
-      rescue Exception => e
-        puts "Error occurred (#{e.class})"
-        throw e
-      end
-    end
-
-    def destroy
-      begin
-
-        delete_route_tables
-
-        delete_internet_gateway
-
-        delete_subnets
-
-        delete_vpc
-
-      rescue Exception => e
-        puts "Error occurred (#{e.class})"
-        throw e
-      end
-    end
-
-    private
     def create_vpc
       if @vpc_id.nil?
         @vpc_id = @gateway.create_vpc(@config.vpc_name,@config.vpc_cidr_block)
