@@ -72,9 +72,11 @@ module VPC
       if route_tables.empty?
         private_route_table = VPC::RouteTable.new(self)
         @private_route_table_id = private_route_table.route_table_id
+        private_route_table.associate_route_table(self,@private_route_table_id,@private_subnet_id)
         public_route_table = VPC::RouteTable.new(self)
         @public_route_tables << public_route_table.create_public_route(self)
         @public_route_table_id = public_route_table.route_table_id
+        public_route_table.associate_route_table(self,@public_route_table_id,@public_subnet_id)
         @route_tables << private_route_table
         @route_tables << public_route_table
       end

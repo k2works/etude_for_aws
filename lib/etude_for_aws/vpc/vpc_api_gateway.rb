@@ -147,6 +147,14 @@ module VPC
       resp.return
     end
 
+    def associate_route_table(route_table_id,subnet_id)
+      resp = @ec2.associate_route_table({
+                                              route_table_id: route_table_id,
+                                              subnet_id: subnet_id,
+                                          })
+      resp.association_id
+    end
+
     def disassociate_route_table(association_id)
       ec2.disassociate_route_table({
                                        association_id: association_id

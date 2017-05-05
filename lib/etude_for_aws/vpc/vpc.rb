@@ -59,7 +59,7 @@ module VPC
       route_tables = @gateway.select_route_tables_by_name(@config.vpc_name)
       if route_tables.empty?
         route_table = VPC::RouteTable.new(self)
-        @route_tables << route_table.create_public_route(self)
+        @route_tables << route_table.create_route(self)
       end
     end
 
