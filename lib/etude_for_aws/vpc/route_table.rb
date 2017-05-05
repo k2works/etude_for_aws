@@ -15,13 +15,10 @@ module VPC
     end
 
     def delete(vpc)
-      ec2 = vpc.config.ec2
       @associate_route_table_ids.each do |id|
-        ec2.disassociate_route_table({
-                                         association_id: id
-                                     })
+        vpc.gateway.disassociate_route_table(id)
       end
-      ec2.delete_route_table({route_table_id: @route_table_id})
+      vpc.gateway.delete_route_table(route_table_id)
     end
   end
 end

@@ -2,6 +2,8 @@ module VPC
   class VpcApiGateway
     include CertificationHelper
 
+    attr_reader :ec2
+
     def initialize
       aws_certificate
       @ec2 = Aws::EC2::Client.new
@@ -62,13 +64,29 @@ module VPC
       associate_route_table_ids
     end
 
-    def create_subnet(vpc)
+    def create_vpc(vpc_name,vpc_cidr_block)
+      resp = @ec2.create_vpc({
+                                cidr_block: vpc_cidr_block
+                            }
+      )
+      vpc_id = resp.vpc.vpc_id
+      @ec2.wait_until(:vpc_exists, {vpc_ids: [vpc_id]})
+      tags = [{key: 'Name', value: vpc_name}]
+      @ec2.create_tags(resources:[vpc_id],tags: tags)
+      vpc_id
+    end
+
+    def delete_vpc(vpc_id)
+      @ec2.delete_vpc({vpc_id: vpc_id})
+    end
+
+    def create_subnet(subnet_cidr_block,vpc_id,vpc_name)
       resp = @ec2.create_subnet({
-                                   cidr_block: vpc.config.subnet_cidr_block,
-                                   vpc_id: vpc.vpc_id,
+                                   cidr_block: subnet_cidr_block,
+                                   vpc_id: vpc_id,
                                })
       subnet_id = resp.subnet.subnet_id
-      tags = [{key: 'Name', value: vpc.config.vpc_name}]
+      tags = [{key: 'Name', value: vpc_name}]
       @ec2.create_tags(resources:[subnet_id],tags: tags)
       subnet_id
     end
@@ -77,16 +95,19 @@ module VPC
       @ec2.delete_subnet({subnet_id: subnet_id})
     end
 
-    def create_internet_gateway(vpc)
+    def create_internet_gateway(vpc_name)
       resp = @ec2.create_internet_gateway
       internet_gateway_id = resp.internet_gateway.internet_gateway_id
-      @ec2.attach_internet_gateway({
-                                      internet_gateway_id: internet_gateway_id,
-                                      vpc_id: vpc.vpc_id
-                                  })
-      tags = [{key: 'Name', value: vpc.config.vpc_name}]
+      tags = [{key: 'Name', value: vpc_name}]
       @ec2.create_tags(resources:[internet_gateway_id],tags: tags)
       internet_gateway_id
+    end
+
+    def attach_internet_gateway(internet_gateway_id, vpc_id)
+      @ec2.attach_internet_gateway({
+                                       internet_gateway_id: internet_gateway_id,
+                                       vpc_id: vpc_id
+                                   })
     end
 
     def detach_internet_gateway(vpc_id,internet_gateway_id)
@@ -112,6 +133,16 @@ module VPC
                            route_table_id: route_table_id,
                        })
       route_table_id
+    end
+
+    def disassociate_route_table(association_id)
+      ec2.disassociate_route_table({
+                                       association_id: association_id
+                                   })
+    end
+
+    def delete_route_table(route_table_id)
+      @ec2.delete_route_table({route_table_id: route_table_id})
     end
 
     private

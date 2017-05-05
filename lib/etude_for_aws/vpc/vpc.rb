@@ -76,20 +76,12 @@ module VPC
     private
     def create_vpc
       if @vpc_id.nil?
-        ec2 = get_ec2_client
-        resp = ec2.create_vpc({
-                                  cidr_block: @config.vpc_cidr_block
-                              }
-        )
-        vpc_id = resp.vpc.vpc_id
-        ec2.wait_until(:vpc_exists, {vpc_ids: [vpc_id]})
-        ec2.create_tags(resources:[vpc_id],tags: @config.tags)
-        @vpc_id = vpc_id
+        @vpc_id = @gateway.create_vpc(@config.vpc_name,@config.vpc_cidr_block)
       end
     end
 
     def delete_vpc
-      @config.ec2.delete_vpc({vpc_id: @vpc_id}) unless @vpc_id.nil?
+      @gateway.delete_vpc(@vpc_id) unless @vpc_id.nil?
       @vpc_id = nil
     end
 
@@ -133,11 +125,6 @@ module VPC
       @route_tables = []
     end
 
-    def get_ec2_client
-      @config.ec2
-    end
-
-
     def set_before_stub
     end
 
@@ -160,22 +147,23 @@ module VPC
     end
 
     def set_before_stub
-      @config.ec2.stub_responses(:describe_vpcs, {
+      ec2 = @gateway.ec2
+      ec2.stub_responses(:describe_vpcs, {
           vpcs:[
               { vpc_id: "String" },
           ],
       })
-      @config.ec2.stub_responses(:describe_subnets, {
+      ec2.stub_responses(:describe_subnets, {
           subnets:[
               { subnet_id: "String" }
           ],
       })
-      @config.ec2.stub_responses(:describe_internet_gateways, {
+      ec2.stub_responses(:describe_internet_gateways, {
           internet_gateways:[
               { internet_gateway_id: "String" },
           ],
       })
-      @config.ec2.stub_responses(:describe_route_tables, {
+      ec2.stub_responses(:describe_route_tables, {
           route_tables:[
               { route_table_id: "String" },
           ],
@@ -184,16 +172,17 @@ module VPC
     end
 
     def set_after_stub
-      @config.ec2.stub_responses(:describe_vpcs, {
+      ec2 = @gateway.ec2
+      ec2.stub_responses(:describe_vpcs, {
           vpcs:[],
       })
-      @config.ec2.stub_responses(:describe_subnets, {
+      ec2.stub_responses(:describe_subnets, {
           subnets:[],
       })
-      @config.ec2.stub_responses(:describe_internet_gateways, {
+      ec2.stub_responses(:describe_internet_gateways, {
           internet_gateways:[],
       })
-      @config.ec2.stub_responses(:describe_route_tables, {
+      ec2.stub_responses(:describe_route_tables, {
           route_tables:[],
       })
       super

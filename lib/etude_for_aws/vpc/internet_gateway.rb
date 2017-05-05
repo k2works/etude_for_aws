@@ -4,7 +4,8 @@ module VPC
 
     def initialize(vpc)
       if vpc.internet_gateway_id.nil?
-        @internet_gateway_id = vpc.gateway.create_internet_gateway(vpc)
+        @internet_gateway_id = vpc.gateway.create_internet_gateway(vpc.config.vpc_name)
+        vpc.gateway.attach_internet_gateway(@internet_gateway_id, vpc.vpc_id)
       else
         @internet_gateway_id = vpc.internet_gateway_id
       end
