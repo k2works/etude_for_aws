@@ -121,18 +121,22 @@ module VPC
       @ec2.delete_internet_gateway({internet_gateway_id: internet_gateway_id})
     end
 
-    def create_route_table(vpc)
+    def create_route_table(vpc_id,vpc_name)
       resp = @ec2.create_route_table({
-                                        vpc_id: vpc.vpc_id
+                                        vpc_id: vpc_id
                                     })
       route_table_id = resp.route_table.route_table_id
-      @ec2.create_tags(resources:[route_table_id],tags: vpc.config.tags)
-      @ec2.create_route({
-                           destination_cidr_block: vpc.config.destination_cidr_block,
-                           gateway_id: vpc.internet_gateway.internet_gateway_id,
-                           route_table_id: route_table_id,
-                       })
+      @ec2.create_tags(resources:[route_table_id],tags: vpc_name)
       route_table_id
+    end
+
+    def create_route(destination_cidr_block,internet_gateway_id,route_table_id)
+      resp = @ec2.create_route({
+                            destination_cidr_block: destination_cidr_block,
+                            gateway_id: internet_gateway_id,
+                            route_table_id: route_table_id,
+                        })
+      resp.return
     end
 
     def disassociate_route_table(association_id)
