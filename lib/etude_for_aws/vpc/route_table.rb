@@ -3,12 +3,13 @@ module VPC
     attr_reader :route_table_id,
                 :associate_route_table_ids
 
-    def initialize(vpc)
+    def initialize
       @associate_route_table_ids = []
-      unless vpc.route_table_id.nil?
-        @route_table_id = vpc.route_table_id
-        @associate_route_table_ids = vpc.gateway.select_associate_route_table_ids_by_route_table_id(@route_table_id)
-      end
+    end
+
+    def setup(id,vpc)
+      @route_table_id = id
+      @associate_route_table_ids = vpc.gateway.select_associate_route_table_ids_by_route_table_id(@route_table_id)
     end
 
     def create(vpc)

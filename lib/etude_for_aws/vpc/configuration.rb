@@ -47,6 +47,10 @@ module VPC
       @vpc_name_tag = {key: vpc_tags['NAME']['KEY'], value: @vpc_name}
       @vpc_group_tag = {key: vpc_tags['GROUP']['KEY'], value: @vpc_group_name}
     end
+
+    def get_internet_gateway_name
+      internet_gateway['IG_TAGS']['NAME']['VALUE']
+    end
   end
 
   class ConfigurationStub < Configuration

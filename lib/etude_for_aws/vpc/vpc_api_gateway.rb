@@ -85,12 +85,9 @@ module VPC
       @ec2.delete_subnet({subnet_id: subnet_id})
     end
 
-    def create_internet_gateway(vpc_name)
+    def create_internet_gateway
       resp = @ec2.create_internet_gateway
-      internet_gateway_id = resp.internet_gateway.internet_gateway_id
-      tags = [{key: 'Name', value: vpc_name}]
-      @ec2.create_tags(resources:[internet_gateway_id],tags: tags)
-      internet_gateway_id
+      resp.internet_gateway.internet_gateway_id
     end
 
     def attach_internet_gateway(internet_gateway_id, vpc_id)

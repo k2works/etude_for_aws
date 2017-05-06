@@ -1,41 +1,7 @@
 module VPC
   class StandardVpc < Vpc
-    attr_reader :vpc_id,
-                :subnet_id,
-                :internet_gateway_id,
-                :route_table_id
-
     def initialize
       super
-      @gateway.select_vpcs_by_name(@config.vpc_name).each do |vpc|
-        @vpc_id = vpc.vpc_id
-      end
-
-      @subnets = []
-      @private_subnets = []
-      @public_subnets = []
-      @config.subnet_names.each do |name|
-        @gateway.select_subnets_by_name(name).each do |subnet|
-          @subnet_id = subnet.subnet_id
-          @subnets << VPC::Subnet.new(self)
-        end
-      end
-
-      name = @config.internet_gateway['IG_TAGS']['NAME']['VALUE']
-      @gateway.select_internet_gateways_by_name(name).each do |internet_gateway|
-        @internet_gateway_id = internet_gateway.internet_gateway_id
-        @internet_gateway = VPC::InternetGateway.new(self)
-      end
-
-      @route_tables = []
-      @private_route_tables = []
-      @public_route_tables = []
-      @config.route_table_names.each do |name|
-        @gateway.select_route_tables_by_name(name).each do |route_table|
-          @route_table_id = route_table.route_table_id
-          @route_tables << VPC::RouteTable.new(self)
-        end
-      end
     end
 
     def create_subnets
@@ -45,7 +11,7 @@ module VPC
         key = v['CONFIG']['SUBNET_TAGS'].first['NAME']['KEY']
         subnets = @gateway.select_subnets_by_name(name)
         if subnets.empty?
-          subnet = VPC::Subnet.new(self)
+          subnet = VPC::Subnet.new
           subnet.create(self,subnet_cidr_block)
           resources = [subnet.subnet_id]
           vpc_subnet_name_tag = {key: key, value: name}
@@ -61,7 +27,7 @@ module VPC
         key = v['CONFIG']['SUBNET_TAGS'].first['NAME']['KEY']
         subnets = @gateway.select_subnets_by_name(name)
         if subnets.empty?
-          subnet = VPC::Subnet.new(self)
+          subnet = VPC::Subnet.new
           subnet.create(self,subnet_cidr_block)
           resources = [subnet.subnet_id]
           vpc_subnet_name_tag = {key: key, value: name}
@@ -86,7 +52,7 @@ module VPC
           key = v['CONFIG']['ROUTE_TABLE_TAGS'].first['NAME']['KEY']
           route_tables = @gateway.select_route_tables_by_name(name)
           if route_tables.empty?
-            route_table = VPC::RouteTable.new(self)
+            route_table = VPC::RouteTable.new
             route_table.create(self)
             route_table.create_public_route(self,destination_cidr_block,@internet_gateway.internet_gateway_id)
             route_table.associate_route_table(self,route_table.route_table_id,subnet.subnet_id)
@@ -107,7 +73,7 @@ module VPC
           key = v['CONFIG']['ROUTE_TABLE_TAGS'].first['NAME']['KEY']
           route_tables = @gateway.select_route_tables_by_name(name)
           if route_tables.empty?
-            route_table = VPC::RouteTable.new(self)
+            route_table = VPC::RouteTable.new
             route_table.create(self)
             route_table.associate_route_table(self,route_table.route_table_id,subnet.subnet_id)
 

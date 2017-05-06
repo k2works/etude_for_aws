@@ -1,10 +1,6 @@
 module VPC
   class Subnet
-    attr_reader :subnet_id
-
-    def initialize(vpc)
-      @subnet_id = vpc.subnet_id unless vpc.subnet_id.nil?
-    end
+    attr_accessor :subnet_id
 
     def create(vpc,subnet_cidr_block)
       @subnet_id = vpc.gateway.create_subnet(subnet_cidr_block,vpc.vpc_id)
