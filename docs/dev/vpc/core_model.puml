@@ -1,0 +1,32 @@
+@startuml
+
+package Aws {
+  class EC2::Client
+}
+
+Interface CertificationHelper
+Interface ConfigurationHelper
+
+package VPC {
+  class VpcDirector {
+    + builder
+    create()
+    destroy()
+  }
+
+  VpcApiGateway -u-> EC2::Client
+  CertificationHelper <|-- VpcApiGateway
+  ConfigurationHelper <|-- Configuration
+
+  Vpc "1" *-u- Configuration
+  Vpc "1" *-u- VpcApiGateway
+  Vpc "1" *-r- "1..*" Subnet
+  Vpc "1" *-r- "1" InternetGateway
+  Vpc "1" *-r- "1..*" RouteTable
+  Vpc <|-- SimpleVpc
+  Vpc <|-- StandardVpc
+  VpcDirector *-r- Vpc
+
+}
+
+@enduml

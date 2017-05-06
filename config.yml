@@ -15,6 +15,54 @@ DEV:
       TEMPLATE_PARAMS_AZ2: 'us-west-2b'
       TEMPLATE_PARAMS_AZ3: 'us-west-2c'
       TAG_VALUE: 'test'
+  VPC:
+    VPC_TAGS:
+      NAME:
+        KEY: 'Name'
+        VALUE: 'TestVpc'
+      GROUP:
+        KEY: 'GroupName'
+        VALUE: 'TestVpcGroup'
+    VPC_CIDR_BLOCK: '10.0.0.0/16'
+    SUBNETS:
+      PUBLIC:
+        - CONFIG:
+            SUBNET_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPublicSubnet1'
+            SUBNET_CIDR_BLOCK:
+              - '10.0.0.0/24'
+      PRIVATE:
+        - CONFIG:
+            SUBNET_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPrivateSubnet1'
+            SUBNET_CIDR_BLOCK:
+              - '10.0.1.0/24'
+    ROUTE_TABLES:
+      PUBLIC:
+        - CONFIG:
+            ROUTE_TABLE_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPublicRouteTable1'
+            DESTINATION_CIDR_BLOCK:
+              - '0.0.0.0/0'
+      PRIVATE:
+        - CONFIG:
+            ROUTE_TABLE_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPrivateSubnet1'
+            DESTINATION_CIDR_BLOCK:
+              - '10.0.0.0/16'
+    INTERNET_GATEWAY:
+      IG_TAGS:
+        NAME:
+          KEY: 'Name'
+          VALUE: 'TestVpcInternetGateway'
   EC2:
     SECURITY_GROUP_NAME: 'MyGroovySecurityGroup'
     SECURITY_GROUP_DESCRIPTION: 'Security group for MyGroovyInstance'
