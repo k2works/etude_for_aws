@@ -5,8 +5,12 @@ module VPC
     attr_reader :config,
                 :gateway
 
-    attr_accessor :public_subnets,
+    attr_accessor :subnets,
+                  :route_tables,
+                  :internet_gateway,
+                  :private_route_tables,
                   :private_subnets,
+                  :public_subnets,
                   :public_route_tables,
                   :private_route_tables
 

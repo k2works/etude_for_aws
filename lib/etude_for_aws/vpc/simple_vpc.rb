@@ -5,10 +5,6 @@ module VPC
                 :internet_gateway_id,
                 :route_table_id
 
-    attr_accessor :subnets,
-                  :internet_gateway,
-                  :route_tables
-
     def initialize
       super
       @gateway.select_vpcs_by_name(@config.vpc_name).each do |vpc|

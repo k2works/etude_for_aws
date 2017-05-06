@@ -2,20 +2,8 @@ module VPC
   class StandardVpc < Vpc
     attr_reader :vpc_id,
                 :subnet_id,
-                :private_subnet_id,
-                :public_subnet_id,
                 :internet_gateway_id,
-                :route_table_id,
-                :private_route_table_id,
-                :public_route_table_id
-
-    attr_accessor :subnets,
-                  :private_subnets,
-                  :public_subnets,
-                  :internet_gateway,
-                  :route_tables,
-                  :private_route_tables,
-                  :public_route_tables
+                :route_table_id
 
     def initialize
       super
