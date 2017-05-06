@@ -6,8 +6,8 @@ module VPC
       @subnet_id = vpc.subnet_id unless vpc.subnet_id.nil?
     end
 
-    def create_default(vpc)
-      @subnet_id = vpc.gateway.create_subnet(vpc.config.subnet_cidr_block,vpc.vpc_id,vpc.config.vpc_name)
+    def create(vpc,subnet_cidr_block)
+      @subnet_id = vpc.gateway.create_subnet(subnet_cidr_block,vpc.vpc_id)
     end
 
     def create_private(vpc)

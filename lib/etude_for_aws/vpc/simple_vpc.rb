@@ -16,20 +16,25 @@ module VPC
       end
 
       @subnets = []
-      @gateway.select_subnets_by_name(@config.vpc_name).each do |subnet|
-        @subnet_id = subnet.subnet_id
-        @subnets << VPC::Subnet.new(self)
+      @config.subnet_names.each do |name|
+        @gateway.select_subnets_by_name(name).each do |subnet|
+          @subnet_id = subnet.subnet_id
+          @subnets << VPC::Subnet.new(self)
+        end
       end
 
-      @gateway.select_internet_gateways_by_name(@config.vpc_name).each do |internet_gateway|
+      name = @config.internet_gateway['IG_TAGS']['NAME']['VALUE']
+      @gateway.select_internet_gateways_by_name(name).each do |internet_gateway|
         @internet_gateway_id = internet_gateway.internet_gateway_id
         @internet_gateway = VPC::InternetGateway.new(self)
       end
 
       @route_tables = []
-      @gateway.select_route_tables_by_name(@config.vpc_name).each do |route_table|
-        @route_table_id = route_table.route_table_id
-        @route_tables << VPC::RouteTable.new(self)
+      @config.route_table_names.each do |name|
+        @gateway.select_route_tables_by_name(name).each do |route_table|
+          @route_table_id = route_table.route_table_id
+          @route_tables << VPC::RouteTable.new(self)
+        end
       end
     end
 

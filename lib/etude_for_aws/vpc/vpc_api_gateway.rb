@@ -73,15 +73,12 @@ module VPC
       @ec2.delete_vpc({vpc_id: vpc_id})
     end
 
-    def create_subnet(subnet_cidr_block,vpc_id,vpc_name)
+    def create_subnet(subnet_cidr_block,vpc_id)
       resp = @ec2.create_subnet({
                                    cidr_block: subnet_cidr_block,
                                    vpc_id: vpc_id,
                                })
-      subnet_id = resp.subnet.subnet_id
-      tags = [{key: 'Name', value: vpc_name}]
-      @ec2.create_tags(resources:[subnet_id],tags: tags)
-      subnet_id
+      resp.subnet.subnet_id
     end
 
     def delete_subnet(subnet_id)
@@ -114,13 +111,11 @@ module VPC
       @ec2.delete_internet_gateway({internet_gateway_id: internet_gateway_id})
     end
 
-    def create_route_table(vpc_id,vpc_name)
+    def create_route_table(vpc_id)
       resp = @ec2.create_route_table({
                                         vpc_id: vpc_id
                                     })
-      route_table_id = resp.route_table.route_table_id
-      @ec2.create_tags(resources:[route_table_id],tags: vpc_name)
-      route_table_id
+      resp.route_table.route_table_id
     end
 
     def create_route_public(destination_cidr_block,internet_gateway_id,route_table_id)

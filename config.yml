@@ -18,16 +18,54 @@ DEV:
   VPC:
     VPC_TAGS:
       NAME:
-        Key: 'Name'
-        Value: 'TestVpc'
+        KEY: 'Name'
+        VALUE: 'TestVpc'
       GROUP:
-        Key: 'GroupName'
-        Value: 'TestVpcGroup'
+        KEY: 'GroupName'
+        VALUE: 'TestVpcGroup'
     VPC_CIDR_BLOCK: '10.0.0.0/16'
-    SUBNET_CIDR_BLOCK: '10.0.0.0/24'
+    SUBNETS:
+      PUBLIC:
+        - CONFIG:
+            SUBNET_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPublicSubnet1'
+            SUBNET_CIDR_BLOCK:
+              - '10.0.0.0/24'
+      PRIVATE:
+        - CONFIG:
+            SUBNET_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPrivateSubnet1'
+            SUBNET_CIDR_BLOCK:
+              - '10.0.1.0/24'
     SUBNET_CIDR_BLOCK_PUBLIC: '10.0.0.0/24'
     SUBNET_CIDR_BLOCK_PRIVATE: '10.0.1.0/24'
     DESTINATION_CIDR_BLOCK: '0.0.0.0/0'
+    ROUTE_TABLES:
+      PUBLIC:
+        - CONFIG:
+            ROUTE_TABLE_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPublicRouteTable1'
+            DESTINATION_CIDR_BLOCK:
+              - '0.0.0.0/0'
+      PRIVATE:
+        - CONFIG:
+            ROUTE_TABLE_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpcPrivateSubnet1'
+            DESTINATION_CIDR_BLOCK:
+              - '10.0.0.0/16'
+    INTERNET_GATEWAY:
+      IG_TAGS:
+        NAME:
+          KEY: 'Name'
+          VALUE: 'TestVpcInternetGateway'
   EC2:
     SECURITY_GROUP_NAME: 'MyGroovySecurityGroup'
     SECURITY_GROUP_DESCRIPTION: 'Security group for MyGroovyInstance'

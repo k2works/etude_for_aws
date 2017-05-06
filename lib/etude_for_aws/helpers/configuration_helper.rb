@@ -56,6 +56,19 @@ module ConfigurationHelper
     ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_TAGS']
   end
 
+  def get_yaml_vpc_subnets
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNETS']
+  end
+
+  def get_yaml_vpc_route_tables
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['ROUTE_TABLES']
+  end
+
+  def get_yaml_internet_gateway
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['INTERNET_GATEWAY']
+  end
+
+
   def get_yaml_vpc_cidr_block
     ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_CIDR_BLOCK']
   end
