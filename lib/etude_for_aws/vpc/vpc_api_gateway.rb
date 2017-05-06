@@ -52,6 +52,13 @@ module VPC
       associate_route_table_ids
     end
 
+    def create_tags(resources,tags)
+      @ec2.create_tags(
+          resources:resources,
+          tags: tags
+      )
+    end
+
     def create_vpc(vpc_name,vpc_cidr_block)
       resp = @ec2.create_vpc({
                                 cidr_block: vpc_cidr_block
@@ -59,8 +66,6 @@ module VPC
       )
       vpc_id = resp.vpc.vpc_id
       @ec2.wait_until(:vpc_exists, {vpc_ids: [vpc_id]})
-      tags = [{key: 'Name', value: vpc_name}]
-      @ec2.create_tags(resources:[vpc_id],tags: tags)
       vpc_id
     end
 

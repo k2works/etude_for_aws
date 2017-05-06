@@ -52,8 +52,8 @@ module ConfigurationHelper
     end
   end
 
-  def get_yaml_vpc_name
-    ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_NAME']
+  def get_yaml_vpc_tags
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_TAGS']
   end
 
   def get_yaml_vpc_cidr_block

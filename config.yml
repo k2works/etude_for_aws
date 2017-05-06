@@ -16,7 +16,13 @@ DEV:
       TEMPLATE_PARAMS_AZ3: 'us-west-2c'
       TAG_VALUE: 'test'
   VPC:
-    VPC_NAME: 'TestVpc'
+    VPC_TAGS:
+      NAME:
+        Key: 'Name'
+        Value: 'TestVpc'
+      GROUP:
+        Key: 'GroupName'
+        Value: 'TestVpcGroup'
     VPC_CIDR_BLOCK: '10.0.0.0/16'
     SUBNET_CIDR_BLOCK: '10.0.0.0/24'
     SUBNET_CIDR_BLOCK_PUBLIC: '10.0.0.0/24'

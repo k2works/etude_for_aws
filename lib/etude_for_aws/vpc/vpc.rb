@@ -13,6 +13,9 @@ module VPC
     def create_vpc
       if @gateway.select_vpcs_by_name(@config.vpc_name).empty?
         @vpc_id = @gateway.create_vpc(@config.vpc_name,@config.vpc_cidr_block)
+        resources = [@vpc_id]
+        tags = [@config.vpc_name_tag,@config.vpc_group_tag]
+        @gateway.create_tags(resources,tags)
       end
     end
 

@@ -14,6 +14,7 @@ RSpec.describe VPC::SimpleVpc do
     it 'vpc' do
       vpc = vpc_builder.builder
       expect(vpc.vpc_id).not_to be_nil
+      expect(vpc.config.vpc_name).to eq('TestVpc')
     end
 
     it 'subnet' do
