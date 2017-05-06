@@ -51,4 +51,41 @@ module ConfigurationHelper
         return raise
     end
   end
+
+  def get_yaml_vpc_tags
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_TAGS']
+  end
+
+  def get_yaml_vpc_subnets
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNETS']
+  end
+
+  def get_yaml_vpc_route_tables
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['ROUTE_TABLES']
+  end
+
+  def get_yaml_internet_gateway
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['INTERNET_GATEWAY']
+  end
+
+
+  def get_yaml_vpc_cidr_block
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPC_CIDR_BLOCK']
+  end
+
+  def get_yaml_subnet_cidr_block
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNET_CIDR_BLOCK']
+  end
+
+  def get_yaml_subnet_cidr_block_public
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNET_CIDR_BLOCK_PUBLIC']
+  end
+
+  def get_yaml_subnet_cidr_block_private
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['SUBNET_CIDR_BLOCK_PRIVATE']
+  end
+
+  def get_yaml_destination_cidr_block
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['DESTINATION_CIDR_BLOCK']
+  end
 end
