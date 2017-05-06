@@ -13,10 +13,6 @@ module VPC
       end
     end
 
-    def create_route(vpc)
-      @associate_route_table_ids = vpc.gateway.select_associate_route_table_ids_by_subnets(@route_table_id,vpc.subnets)
-    end
-
     def create_private_route(vpc)
       vpc.gateway.create_route_private(@route_table_id)
     end

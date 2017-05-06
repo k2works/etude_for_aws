@@ -37,18 +37,6 @@ module VPC
       ).route_tables
     end
 
-    def select_associate_route_table_ids_by_subnets(route_table_id,subnets)
-      associate_route_table_ids = []
-      subnets.each do |subnet|
-        resp = @ec2.associate_route_table({
-                                              route_table_id: route_table_id,
-                                              subnet_id: subnet.subnet_id
-                                          })
-        associate_route_table_ids << resp.association_id
-      end
-      associate_route_table_ids
-    end
-
     def select_associate_route_table_ids_by_route_table_id(route_table_id)
       associate_route_table_ids = []
       resp = @ec2.describe_route_tables({

@@ -11,7 +11,7 @@ module VPC
     end
 
     def create_vpc
-      if @vpc_id.nil?
+      if @gateway.select_vpcs_by_name(@config.vpc_name).empty?
         @vpc_id = @gateway.create_vpc(@config.vpc_name,@config.vpc_cidr_block)
       end
     end
@@ -53,7 +53,9 @@ module VPC
       route_tables = @gateway.select_route_tables_by_name(@config.vpc_name)
       if route_tables.empty?
         route_table = VPC::RouteTable.new(self)
-        @route_tables << route_table.create_route(self)
+        @subnets.each do |subnet|
+          @route_tables << route_table.associate_route_table(self,route_table.route_table_id,subnet.subnet_id)
+        end
       end
     end
 
