@@ -38,12 +38,6 @@ module VPC
       end
     end
 
-    def delete_subnets
-      super
-      @private_subnets = []
-      @public_subnets = []
-    end
-
     def create_route_table
       @public_subnets.each do |subnet|
         @config.public_route_tables.each do |v|
@@ -86,13 +80,6 @@ module VPC
         end
       end
     end
-
-    def delete_route_tables
-      super
-      @private_route_tables = []
-      @public_route_tables = []
-    end
-
   end
 
   class StandardVpcStub < StandardVpc

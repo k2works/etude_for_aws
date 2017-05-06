@@ -49,12 +49,16 @@ module CFM
       end
     end
 
-    protected
-    def get_template_full_path(template_file)
-      Dir.pwd + @config.template_path + template_file
+    def get_vpc_id
+      @config.vpc_id
     end
 
     def get_subnet_infos
+    end
+
+    protected
+    def get_template_full_path(template_file)
+      Dir.pwd + @config.template_path + template_file
     end
 
     private

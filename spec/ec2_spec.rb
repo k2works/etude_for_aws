@@ -5,6 +5,24 @@ include Ec2SpecHelper
 RSpec.describe EC2::Ec2 do
   SERVICE_STUB = true
 
+  context 'Using Vpc' do
+    context 'Simple Vpc' do
+      let(:vpc_builder) {VPC::VpcDirector.new(VPC::SimpleVpcStub.new)}
+      describe '#create' do
+        before(:each) do
+          vpc_builder.create
+        end
+
+        after(:each) do
+          vpc_builder.destroy
+        end
+        it 'crate instance with security group and keypair' do
+          create_ec2_instance(vpc_builder.builder)
+        end
+      end
+    end
+  end
+
   context 'Using Vpc From CloudFormation' do
     context 'One Availability Zones One PublicSubnet Virtual private cloud' do
       before(:all) do

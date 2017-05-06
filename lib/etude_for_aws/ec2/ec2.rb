@@ -7,7 +7,7 @@ module EC2
   class Ec2
     def initialize(vpc)
       @config = Configuration.new
-      @config.vpc_id = vpc.config.vpc_id
+      @config.vpc_id = vpc.get_vpc_id
       @subnet_infos = vpc.get_subnet_infos
       @security_group = SecurityGroup.new(@config)
       @key_pair = KeyPair.new(@config)
