@@ -10,12 +10,6 @@ module VPC
       @gateway = VPC::VpcApiGateway.new
     end
 
-    def set_before_stub
-    end
-
-    def set_after_stub
-    end
-
     def create_vpc
       if @vpc_id.nil?
         @vpc_id = @gateway.create_vpc(@config.vpc_name,@config.vpc_cidr_block)

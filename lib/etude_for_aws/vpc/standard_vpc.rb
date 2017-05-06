@@ -96,54 +96,5 @@ module VPC
       @config = VPC::ConfigurationStub.new
       @gateway = VPC::VpcApiGatewayStub.new
     end
-
-    def destroy
-      set_before_stub
-      super
-      set_after_stub
-    end
-
-    def set_before_stub
-      ec2 = @gateway.ec2
-      ec2.stub_responses(:describe_vpcs, {
-          vpcs:[
-              { vpc_id: "String" },
-          ],
-      })
-      ec2.stub_responses(:describe_subnets, {
-          subnets:[
-              { subnet_id: "String" }
-          ],
-      })
-      ec2.stub_responses(:describe_internet_gateways, {
-          internet_gateways:[
-              { internet_gateway_id: "String" },
-          ],
-      })
-      ec2.stub_responses(:describe_route_tables, {
-          route_tables:[
-              { route_table_id: "String" },
-          ],
-      })
-      super
-    end
-
-    def set_after_stub
-      ec2 = @gateway.ec2
-      ec2.stub_responses(:describe_vpcs, {
-          vpcs:[],
-      })
-      ec2.stub_responses(:describe_subnets, {
-          subnets:[],
-      })
-      ec2.stub_responses(:describe_internet_gateways, {
-          internet_gateways:[],
-      })
-      ec2.stub_responses(:describe_route_tables, {
-          route_tables:[],
-      })
-      super
-    end
-
   end
 end
