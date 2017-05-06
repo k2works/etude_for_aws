@@ -41,9 +41,6 @@ DEV:
                   VALUE: 'TestVpcPrivateSubnet1'
             SUBNET_CIDR_BLOCK:
               - '10.0.1.0/24'
-    SUBNET_CIDR_BLOCK_PUBLIC: '10.0.0.0/24'
-    SUBNET_CIDR_BLOCK_PRIVATE: '10.0.1.0/24'
-    DESTINATION_CIDR_BLOCK: '0.0.0.0/0'
     ROUTE_TABLES:
       PUBLIC:
         - CONFIG:
