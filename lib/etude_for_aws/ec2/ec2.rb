@@ -5,7 +5,7 @@ require 'fileutils'
 
 module EC2
   class Ec2
-    attr_reader :config,:gateway,:security_group,:key_pair,:ec2_instance
+    attr_reader :config,:gateway,:security_group,:key_pair,:ec2_instances
 
     def initialize(vpc)
       @config = Configuration.new
@@ -14,7 +14,7 @@ module EC2
       @subnet_infos = vpc.get_subnet_infos
       @security_group = SecurityGroup.new(self)
       @key_pair = KeyPair.new(self)
-      @ec2_instance = Ec2Instance.new(self)
+      @ec2_instances = []
     end
 
     def create
@@ -38,15 +38,21 @@ module EC2
     end
 
     def start
-      @ec2_instance.start
+      @ec2_instances.each do |ec2_instance|
+        ec2_instance.start
+      end
     end
 
     def stop
-      @ec2_instance.stop
+      @ec2_instances.each do |ec2_instance|
+        ec2_instance.stop
+      end
     end
 
     def reboot
-      @ec2_instance.reboot
+      @ec2_instances.each do |ec2_instance|
+        ec2_instance.reboot
+      end
     end
 
     private
@@ -62,12 +68,16 @@ module EC2
       @subnet_infos.each do |info|
         @config.subnet_id = info[:subnet_id]
         @config.az = info[:az]
-        @ec2_instance.create(@security_group,@key_pair)
+        ec2_instance = Ec2Instance.new(self)
+        ec2_instance.create(@security_group,@key_pair)
+        @ec2_instances << ec2_instance
       end
     end
 
     def terminate_ec2_instance
-      @ec2_instance = nil if @ec2_instance.terminate.empty?
+      @ec2_instances.each do |ec2_instance|
+        ec2_instance.terminate
+      end
     end
 
     def delete_security_group
@@ -88,7 +98,7 @@ module EC2
       @subnet_infos = vpc.get_subnet_infos
       @security_group = SecurityGroup.new(self)
       @key_pair = KeyPair.new(self)
-      @ec2_instance = Ec2Instance.new(self)
+      @ec2_instances = []
     end
 
     def start
@@ -162,7 +172,7 @@ module EC2
                                          ]
                                      })
       super
-      @ec2_instance = nil
+      @ec2_instances = []
     end
 
     def delete_security_group

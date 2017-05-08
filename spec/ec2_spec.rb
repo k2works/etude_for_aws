@@ -20,7 +20,7 @@ RSpec.describe EC2::Ec2 do
         end
         it 'crate instance with security group and keypair' do
           ec2.create
-          expect(ec2.ec2_instance).not_to be_nil
+          expect(ec2.ec2_instances).not_to be_nil
           expect(ec2.security_group.security_group_id).not_to be_nil
           expect(ec2.key_pair).not_to be_nil
         end
@@ -52,7 +52,7 @@ RSpec.describe EC2::Ec2 do
 
         it 'delete instance with security group and keypair' do
           ec2.destroy
-          expect(ec2.ec2_instance).to be_nil
+          expect(ec2.ec2_instances).to be_empty
           expect(ec2.security_group).to be_nil
           expect(ec2.key_pair).to be_nil
         end
