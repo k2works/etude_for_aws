@@ -46,33 +46,20 @@ module EC2
 
     def create
       if @security_group_id.nil?
-        sg = @gateway.resource.create_security_group(@security_group)
-
-        sg.authorize_egress(@authorize_egress)
-        sg.authorize_ingress(@authorize_ingress)
-        @security_group_id = sg.id
+        id = @gateway.create_security_group(@security_group)
+        @gateway.authorize_egress(id,@authorize_egress)
+        @gateway.authorize_ingress(id,@authorize_ingress)
+        @security_group_id = id
       end
     end
 
     def delete
-      resp = nil
-      unless @security_group_id.nil?
-        resp = @gateway.client.delete_security_group({
-                                                        group_id: @security_group_id,
-                                                    })
-      end
-      resp
+      @gateway.delete_security_group(@security_group_id) unless @security_group_id.nil?
     end
 
     private
     def get_group_id
-      group_id = nil
-      @gateway.resource.security_groups.each do |sg|
-        if sg.group_name == @security_group[:group_name]
-          group_id = sg.group_id
-        end
-      end
-      group_id
+      @gateway.get_group_id(@security_group)
     end
   end
 end

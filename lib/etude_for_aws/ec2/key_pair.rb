@@ -11,7 +11,7 @@ module EC2
     end
 
     def create
-      key_pairs_result = @gateway.client.describe_key_pairs()
+      key_pairs_result = @gateway.select_key_pairs
       key_pairs = []
       if key_pairs_result.key_pairs.count > 0
         key_pairs_result.key_pairs.each do |key_pair|
@@ -21,9 +21,7 @@ module EC2
 
       unless key_pairs.include?(@key_pair_name)
         begin
-          key_pair = @gateway.client.create_key_pair({
-                                                        key_name: @key_pair_name
-                                                    })
+          key_pair = @gateway.create_key_pairs(@key_pair_name)
           puts "Created key pair '#{key_pair.key_name}'."
           puts "\nSHA-1 digest of the DER encoded private key:"
           puts "#{key_pair.key_fingerprint}"
@@ -41,9 +39,7 @@ module EC2
     end
 
     def delete
-      @gateway.client.delete_key_pair({
-                                         key_name: @key_pair_name
-                                     })
+      @gateway.delete_key_pairs(@key_pair_name)
       FileUtils.rm(@pem_file)
     end
   end

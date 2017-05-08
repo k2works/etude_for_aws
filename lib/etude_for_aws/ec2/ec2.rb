@@ -38,65 +38,15 @@ module EC2
     end
 
     def start
-      instance_ids = @ec2_instance.get_instance_collection
-      instance_ids.each do |instance_id|
-        i = @gateway.resource.instance(instance_id)
-
-        if i.exists?
-          case i.state.code
-            when 0  # pending
-              puts "#{instance_id} is pending, so it will be running in a bit"
-            when 16  # started
-              puts "#{instance_id} is already started"
-            when 48  # terminated
-              puts "#{instance_id} is terminated, so you cannot start it"
-            else
-              puts "#{instance_id} is starting"
-              i.start
-              @gateway.resource.client.wait_until(:instance_running, {instance_ids: [instance_id]})  unless @config.stub?
-          end
-        end
-      end
+      @ec2_instance.start
     end
 
     def stop
-      instance_ids = @ec2_instance.get_instance_collection
-      instance_ids.each do |instance_id|
-        i = @gateway.resource.instance(instance_id)
-
-        if i.exists?
-          case i.state.code
-            when 48  # terminated
-              puts "#{instance_id} is terminated, so you cannot stop it"
-            when 64  # stopping
-              puts "#{instance_id} is stopping, so it will be stopped in a bit"
-            when 89  # stopped
-              puts "#{instance_id} is already stopped"
-            else
-              puts "#{instance_id} is stopping"
-              i.stop
-              @gateway.resource.client.wait_until(:instance_stopped, {instance_ids: [instance_id]}) unless @config.stub?
-          end
-        end
-      end
+      @ec2_instance.stop
     end
 
     def reboot
-      instance_ids = @ec2_instance.get_instance_collection
-      instance_ids.each do |instance_id|
-        i = @gateway.resource.instance(instance_id)
-
-        if i.exists?
-          case i.state.code
-            when 48  # terminated
-              puts "#{instance_id} is terminated, so you cannot reboot it"
-            else
-              puts "#{instance_id} is rebooting"
-              i.reboot
-              @gateway.client.wait_until(:instance_status_ok, {instance_ids: [instance_id]})  unless @config.stub?
-          end
-        end
-      end
+      @ec2_instance.reboot
     end
 
     private
