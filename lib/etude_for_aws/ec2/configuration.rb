@@ -34,14 +34,18 @@ module EC2
       group_value = vpc_tags['GROUP']['VALUE']
       instances = get_yaml_ec2_instances
       @instance_tags_public = []
-      instances['PUBLIC'].each do |v|
-        name_value = v['CONFIG']['INSTANCE_TAGS'].first['NAME']['VALUE']
-        @instance_tags_public << [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+      unless instances['PUBLIC'].nil?
+        instances['PUBLIC'].each do |v|
+          name_value = v['CONFIG']['INSTANCE_TAGS'].first['NAME']['VALUE']
+          @instance_tags_public << [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+        end
       end
       @instance_tags_private = []
-      instances['PRIVATE'].each do |v|
-        name_value = v['CONFIG']['INSTANCE_TAGS'].first['NAME']['VALUE']
-        @instance_tags_private << [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+      unless instances['PRIVATE'].nil?
+        instances['PRIVATE'].each do |v|
+          name_value = v['CONFIG']['INSTANCE_TAGS'].first['NAME']['VALUE']
+          @instance_tags_private << [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+        end
       end
       @instance_tags = []
 

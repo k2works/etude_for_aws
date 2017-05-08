@@ -84,19 +84,21 @@ module EC2
     end
 
     def create_ec2_instance
-      n = 0
+      private_i = 0
+      public_i = 0
       @subnet_infos.each do |info|
         @config.subnet_id = info[:subnet_id]
         @config.az = info[:az]
         if info[:network] == 'Private'
-          @config.instance_tags = @config.instance_tags_private[n]
+          @config.instance_tags = @config.instance_tags_private[private_i]
+          private_i += private_i
         else
-          @config.instance_tags = @config.instance_tags_public[n]
+          @config.instance_tags = @config.instance_tags_public[public_i]
+          public_i += public_i
         end
         ec2_instance = Ec2Instance.new(self)
         ec2_instance.create(@security_group,@key_pair)
         @ec2_instances << ec2_instance
-        n += 1
       end
     end
 

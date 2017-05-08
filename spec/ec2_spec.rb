@@ -21,6 +21,61 @@ RSpec.describe EC2::Ec2 do
         it 'crate instance with security group and keypair' do
           ec2.create
           expect(ec2.ec2_instances).not_to be_nil
+          expect(ec2.ec2_instances.count).to eq(1)
+          expect(ec2.security_group.security_group_id).not_to be_nil
+          expect(ec2.key_pair).not_to be_nil
+        end
+      end
+
+      describe '#start' do
+        it 'start instance' do
+          ec2.start
+        end
+      end
+
+      describe '#reboot' do
+        it 'reboot instance' do
+          ec2.reboot
+        end
+      end
+
+      describe '#stop' do
+        it 'stop instance' do
+          ec2.stop
+        end
+      end
+
+      describe '#destroy' do
+        before(:each) do
+          vpc_builder.create
+          ec2.create
+        end
+
+        it 'delete instance with security group and keypair' do
+          ec2.destroy
+          expect(ec2.ec2_instances).to be_empty
+          expect(ec2.security_group).to be_nil
+          expect(ec2.key_pair).to be_nil
+        end
+      end
+    end
+
+    context 'Standard Vpc' do
+      let(:vpc_builder) {VPC::VpcDirector.new(VPC::StandardVpcStub.new)}
+      let(:ec2) { EC2::Ec2Stub.new(vpc_builder.builder) }
+
+      describe '#create' do
+        before(:each) do
+          vpc_builder.create
+        end
+
+        after(:each) do
+          vpc_builder.destroy
+        end
+        it 'crate instance with security group and keypair' do
+          ec2.create
+          expect(ec2.ec2_instances).not_to be_nil
+          expect(ec2.ec2_instances.count).to eq(2)
           expect(ec2.security_group.security_group_id).not_to be_nil
           expect(ec2.key_pair).not_to be_nil
         end
