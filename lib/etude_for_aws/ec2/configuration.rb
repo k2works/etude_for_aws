@@ -4,7 +4,8 @@ module EC2
 
     attr_accessor :vpc_id,
                   :subnet_id,
-                  :az
+                  :az,
+                  :instance_tags
 
     attr_reader :security_group_name,
                 :security_group_description,
@@ -14,7 +15,8 @@ module EC2
                 :instance_type,
                 :min_count,
                 :max_count,
-                :instance_tags,
+                :instance_tags_public,
+                :instance_tags_private,
                 :stub
 
     def initialize
@@ -27,9 +29,22 @@ module EC2
       @instance_type = ec2_config['INSTANCE_TYPE']
       @min_count = ec2_config['MIN_COUNT'].to_i
       @max_count = ec2_config['MAX_COUNT'].to_i
-      name_value = ec2_config['INSTANCE_TAGS']['NAME_VALUE']
-      group_value = ec2_config['INSTANCE_TAGS']['GROUP_VALUE']
-      @instance_tags = [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+
+      vpc_tags = get_yaml_vpc_tags
+      group_value = vpc_tags['GROUP']['VALUE']
+      instances = get_yaml_ec2_instances
+      @instance_tags_public = []
+      instances['PUBLIC'].each do |v|
+        name_value = v['CONFIG']['INSTANCE_TAGS'].first['NAME']['VALUE']
+        @instance_tags_public << [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+      end
+      @instance_tags_private = []
+      instances['PRIVATE'].each do |v|
+        name_value = v['CONFIG']['INSTANCE_TAGS'].first['NAME']['VALUE']
+        @instance_tags_private << [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+      end
+      @instance_tags = []
+
       @stub = false
     end
 

@@ -92,4 +92,8 @@ module ConfigurationHelper
   def get_yaml_ec2_config
     ConfigurationHelper.load_yaml_file['DEV']['EC2']
   end
+
+  def get_yaml_ec2_instances
+    ConfigurationHelper.load_yaml_file['DEV']['EC2']['INSTANCES']
+  end
 end

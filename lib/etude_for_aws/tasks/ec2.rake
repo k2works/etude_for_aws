@@ -3,6 +3,22 @@ require 'etude_for_aws'
 namespace :EC2 do
   task :default => :create_type01_env
 
+  desc 'シンプルなVPC環境にEC2インスタンスを作成する'
+  task :create_simple_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::SimpleVpc.new)
+    vpc_director.create
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).create
+  end
+
+  desc 'シンプルなVPC環境のEC2インスタンスを削除する'
+  task :destroy_simple_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::SimpleVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).destroy
+    vpc_director.destroy
+  end
+
   desc '１つのアベイラビリティゾーンに１つのパブリックサブネットのVPC環境を作成する'
   task :setup_type01_env => [:create_type01,:copy_key_pair] do
     puts '１つのアベイラビリティゾーンに１つのパブリックサブネットのVPC環境を作成しました。'

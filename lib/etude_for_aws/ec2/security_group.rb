@@ -39,6 +39,16 @@ module EC2
                       },
                   ],
               },
+              {
+                  ip_protocol: "icmp",
+                  from_port: -1,
+                  to_port: -1,
+                  ip_ranges: [
+                      {
+                          cidr_ip: "0.0.0.0/0",
+                      },
+                  ],
+              },
           ],
       }
       @security_group_id = get_group_id

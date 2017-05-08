@@ -5,11 +5,7 @@ module EC2
     def initialize(vpc)
       @config = Configuration.new
       @gateway = Ec2ApiGateway.new
-      @config.vpc_id = vpc.get_vpc_id
-      @subnet_infos = vpc.get_subnet_infos
-      @security_group = SecurityGroup.new(self)
-      @key_pair = KeyPair.new(self)
-      @ec2_instances = []
+      setup_config(vpc)
     end
 
     def create
@@ -51,6 +47,34 @@ module EC2
     end
 
     private
+    def setup_config(vpc)
+      @config.vpc_id = vpc.get_vpc_id
+      @subnet_infos = vpc.get_subnet_infos
+      @security_group = SecurityGroup.new(self)
+      @key_pair = KeyPair.new(self)
+
+      @ec2_instances = []
+      @config.instance_tags_public.each do |tag|
+        @config.instance_tags = tag
+        values = [@config.instance_tags[0][:value]]
+        instance_ids = @gateway.get_instance_collection(values)
+        instance_ids.each do |instance_id|
+          ec2_instance = Ec2Instance.new(self, instance_id)
+          @ec2_instances << ec2_instance
+        end
+      end
+
+      @config.instance_tags_private.each do |tag|
+        @config.instance_tags = tag
+        values = [@config.instance_tags[0][:value]]
+        instance_ids = @gateway.get_instance_collection(values)
+        instance_ids.each do |instance_id|
+          ec2_instance = Ec2Instance.new(self, instance_id)
+          @ec2_instances << ec2_instance
+        end
+      end
+    end
+
     def create_security_group
       @security_group.create
     end
@@ -60,12 +84,19 @@ module EC2
     end
 
     def create_ec2_instance
+      n = 0
       @subnet_infos.each do |info|
         @config.subnet_id = info[:subnet_id]
         @config.az = info[:az]
+        if info[:network] == 'Private'
+          @config.instance_tags = @config.instance_tags_private[n]
+        else
+          @config.instance_tags = @config.instance_tags_public[n]
+        end
         ec2_instance = Ec2Instance.new(self)
         ec2_instance.create(@security_group,@key_pair)
         @ec2_instances << ec2_instance
+        n += 1
       end
     end
 
@@ -89,11 +120,7 @@ module EC2
     def initialize(vpc)
       @config = ConfigurationStub.new
       @gateway = Ec2ApiGatewayStub.new
-      @config.vpc_id = vpc.get_vpc_id
-      @subnet_infos = vpc.get_subnet_infos
-      @security_group = SecurityGroup.new(self)
-      @key_pair = KeyPair.new(self)
-      @ec2_instances = []
+      setup_config(vpc)
     end
 
     def start

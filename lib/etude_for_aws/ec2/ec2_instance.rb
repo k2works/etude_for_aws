@@ -2,7 +2,7 @@ module EC2
   class Ec2Instance
     attr_reader :instance_id
 
-    def initialize(ec2)
+    def initialize(ec2,instance_id=nil)
       @config = ec2.config
       @gateway = ec2.gateway
       script = ''
@@ -12,6 +12,7 @@ module EC2
       @min_count = @config.min_count
       @max_count = @config.max_count
       @instance_tags = @config.instance_tags
+      @instance_id = instance_id
     end
 
     def create(security_group,key_pair)
@@ -24,8 +25,8 @@ module EC2
                                   @instance_type,
                                   @config)
 
-      instance.empty? ? @instance_id = nil : @instance_id = instance.id
-      @gateway.wait_for_instance_status_ok(instance)
+      instance.empty? ? @instance_id = nil : @instance_id = instance.first.id
+      @gateway.wait_for_instance_status_ok(@instance_id)
       instance.create_tags({tags: @instance_tags})
       instance
     end
