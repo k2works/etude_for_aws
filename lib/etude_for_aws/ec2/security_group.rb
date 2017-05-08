@@ -5,8 +5,8 @@ module EC2
     def initialize(ec2)
       @config = ec2.config
       @gateway = ec2.gateway
-      group_name = @config.yaml['DEV']['EC2']['SECURITY_GROUP_NAME']
-      description = @config.yaml['DEV']['EC2']['SECURITY_GROUP_DESCRIPTION']
+      group_name = @config.security_group_name
+      description = @config.security_group_description
       vpc_id = @config.vpc_id
       @security_group = {
           group_name: group_name,

@@ -7,13 +7,11 @@ module EC2
       @gateway = ec2.gateway
       script = ''
       @encoded_script = Base64.encode64(script)
-      @image_id = @config.yaml['DEV']['EC2']['IMAGE_ID']
-      @instance_type = @config.yaml['DEV']['EC2']['INSTANCE_TYPE']
-      @min_count = @config.yaml['DEV']['EC2']['MIN_COUNT'].to_i
-      @max_count = @config.yaml['DEV']['EC2']['MAX_COUNT'].to_i
-      name_value = @config.yaml['DEV']['EC2']['INSTANCE_TAGS']['NAME_VALUE']
-      group_value = @config.yaml['DEV']['EC2']['INSTANCE_TAGS']['GROUP_VALUE']
-      @instance_tags = [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+      @image_id = @config.image_id
+      @instance_type = @config.instance_type
+      @min_count = @config.min_count
+      @max_count = @config.max_count
+      @instance_tags = @config.instance_tags
     end
 
     def create(security_group,key_pair)

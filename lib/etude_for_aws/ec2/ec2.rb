@@ -1,8 +1,3 @@
-require 'aws-sdk'
-require 'dotenv'
-require 'base64'
-require 'fileutils'
-
 module EC2
   class Ec2
     attr_reader :config,:gateway,:security_group,:key_pair,:ec2_instances

@@ -5,8 +5,8 @@ module EC2
     def initialize(ec2)
       @config = ec2.config
       @gateway = ec2.gateway
-      @key_pair_name = @config.yaml['DEV']['EC2']['KEY_PAIR_NAME']
-      path = Dir.pwd + @config.yaml['DEV']['EC2']['KEY_PAIR_PATH']
+      @key_pair_name = @config.key_pair_name
+      path = Dir.pwd + @config.key_pair_path
       @pem_file = path + "#{@key_pair_name}.pem"
     end
 
