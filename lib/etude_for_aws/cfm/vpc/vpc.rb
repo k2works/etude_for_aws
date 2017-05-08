@@ -70,7 +70,7 @@ module CFM
       stack_names
     end
 
-    def get_vpc_id
+    def select_vpc_id
       @cfm.describe_stack_resource({stack_name: @config.stack_name, logical_resource_id: 'VPC'}).stack_resource_detail.physical_resource_id
     end
 
@@ -82,6 +82,8 @@ module CFM
   end
 
   class VpcStub < Vpc
+    include EC2::VpcInterface
+
     def create
       p "#{self.class} Create Virtual Private Cloud"
       @config.stack_id = 'DUMMY'
