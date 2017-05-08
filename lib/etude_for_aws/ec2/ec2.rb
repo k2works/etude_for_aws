@@ -5,13 +5,16 @@ require 'fileutils'
 
 module EC2
   class Ec2
+    attr_reader :config,:gateway,:security_group,:key_pair,:ec2_instance
+
     def initialize(vpc)
       @config = Configuration.new
+      @gateway = Ec2ApiGateway.new
       @config.vpc_id = vpc.get_vpc_id
       @subnet_infos = vpc.get_subnet_infos
-      @security_group = SecurityGroup.new(@config)
-      @key_pair = KeyPair.new(@config)
-      @ec2_instance = Ec2Instance.new(@config)
+      @security_group = SecurityGroup.new(self)
+      @key_pair = KeyPair.new(self)
+      @ec2_instance = Ec2Instance.new(self)
     end
 
     def create
@@ -37,7 +40,7 @@ module EC2
     def start
       instance_ids = @ec2_instance.get_instance_collection
       instance_ids.each do |instance_id|
-        i = @config.ec2.instance(instance_id)
+        i = @gateway.resource.instance(instance_id)
 
         if i.exists?
           case i.state.code
@@ -50,7 +53,7 @@ module EC2
             else
               puts "#{instance_id} is starting"
               i.start
-              @config.ec2.client.wait_until(:instance_running, {instance_ids: [instance_id]})
+              @gateway.resource.client.wait_until(:instance_running, {instance_ids: [instance_id]})  unless @config.stub?
           end
         end
       end
@@ -59,7 +62,7 @@ module EC2
     def stop
       instance_ids = @ec2_instance.get_instance_collection
       instance_ids.each do |instance_id|
-        i = @config.ec2.instance(instance_id)
+        i = @gateway.resource.instance(instance_id)
 
         if i.exists?
           case i.state.code
@@ -72,7 +75,7 @@ module EC2
             else
               puts "#{instance_id} is stopping"
               i.stop
-              @config.ec2.client.wait_until(:instance_stopped, {instance_ids: [instance_id]})
+              @gateway.resource.client.wait_until(:instance_stopped, {instance_ids: [instance_id]}) unless @config.stub?
           end
         end
       end
@@ -81,7 +84,7 @@ module EC2
     def reboot
       instance_ids = @ec2_instance.get_instance_collection
       instance_ids.each do |instance_id|
-        i = @config.ec2.instance(instance_id)
+        i = @gateway.resource.instance(instance_id)
 
         if i.exists?
           case i.state.code
@@ -90,7 +93,7 @@ module EC2
             else
               puts "#{instance_id} is rebooting"
               i.reboot
-              @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance_id]})
+              @gateway.client.wait_until(:instance_status_ok, {instance_ids: [instance_id]})  unless @config.stub?
           end
         end
       end
@@ -114,56 +117,111 @@ module EC2
     end
 
     def terminate_ec2_instance
-      @ec2_instance.terminate
+      @ec2_instance = nil if @ec2_instance.terminate.empty?
     end
 
     def delete_security_group
-      @security_group.delete
+      @security_group = nil if @security_group.delete.nil?
     end
 
     def delete_key_pair
       @key_pair.delete
+      @key_pair = nil
     end
   end
 
   class Ec2Stub < Ec2
+    def initialize(vpc)
+      @config = ConfigurationStub.new
+      @gateway = Ec2ApiGatewayStub.new
+      @config.vpc_id = vpc.get_vpc_id
+      @subnet_infos = vpc.get_subnet_infos
+      @security_group = SecurityGroup.new(self)
+      @key_pair = KeyPair.new(self)
+      @ec2_instance = Ec2Instance.new(self)
+    end
+
     def start
-      p "#{self.class} start instances"
+      @gateway.client.stub_responses(:describe_instances,
+                                     {
+                                         reservations: [
+                                             {
+                                                 instances: [
+                                                     instance_id: 'String',
+                                                     state: {'code':89}
+                                                 ]
+                                             }
+                                         ]
+                                     })
+      super
     end
 
     def reboot
-      p "#{self.class} reboot instances"
+      @gateway.client.stub_responses(:describe_instances,
+                                     {
+                                         reservations: [
+                                             {
+                                                 instances: [
+                                                     instance_id: 'String',
+                                                     state: {'code':16}
+                                                 ]
+                                             }
+                                         ]
+                                     })
+      super
     end
 
     def stop
-      p "#{self.class} stop instances"
+      @gateway.client.stub_responses(:describe_instances,
+                                     {
+                                         reservations: [
+                                             {
+                                                 instances: [
+                                                     instance_id: 'String',
+                                                     state: {'code':16}
+                                                 ]
+                                             }
+                                         ]
+                                     })
+      super
     end
 
     private
     def create_security_group
-      p "#{self.class} Create Security Group"
+      super
     end
 
     def create_key_pair
-      p "#{self.class} Create key pair"
+      super
     end
 
     def create_ec2_instance
-      @subnet_infos.each do |info|
-        p "#{self.class} Create EC2 Instance in Subnet #{info[:subnet_id]}"
-      end
+      super
     end
 
     def terminate_ec2_instance
-      p "#{self.class} Terminate EC2 Instance"
+      @gateway.client.stub_responses(:describe_instances,
+                                     {
+                                         reservations: [
+                                             {
+                                                 instances: [
+                                                     instance_id: 'String',
+                                                     state: {'code':16}
+                                                 ]
+                                             }
+                                         ]
+                                     })
+      super
+      @ec2_instance = nil
     end
 
     def delete_security_group
-      p "#{self.class} Delete Security Group"
+      super
+      @security_group = nil
     end
 
     def delete_key_pair
-      p "#{self.class} Delete key pair"
+      super
     end
   end
 end

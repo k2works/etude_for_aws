@@ -1,7 +1,8 @@
 module EC2
   class Ec2Instance
-    def initialize(config)
-      @config = config
+    def initialize(ec2)
+      @config = ec2.config
+      @gateway = ec2.gateway
       script = ''
       @encoded_script = Base64.encode64(script)
       @image_id = @config.yaml['DEV']['EC2']['IMAGE_ID']
@@ -14,7 +15,7 @@ module EC2
     end
 
     def create(security_group,key_pair)
-      instance = @config.ec2.create_instances({
+      instance = @gateway.resource.create_instances({
                                                   image_id: @image_id,
                                                   min_count: @min_count,
                                                   max_count: @max_count,
@@ -34,7 +35,7 @@ module EC2
                                                   ],
                                               })
 
-      @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance[0].id]})
+      @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance[0].id]}) unless instance.empty?
 
       instance.create_tags({tags: @instance_tags})
 
@@ -44,7 +45,7 @@ module EC2
     def terminate
       instance_ids = get_instance_collection
       instance_ids.each do |instance_id|
-        i = @config.ec2.instance(instance_id)
+        i = @gateway.resource.instance(instance_id)
 
         if i.exists?
           case i.state.code
@@ -54,14 +55,15 @@ module EC2
               i.terminate
           end
         end
-
-        @config.ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]})
+        instance_ids
+        @config.ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]}) unless @config.stub?
+        instance_ids = get_instance_collection
       end
     end
 
     def get_instance_collection
       instance_ids = []
-      resp = @config.client.describe_instances(filters: [{name: "tag:Name", values: [@instance_tags[0][:value]]}])
+      resp = @gateway.client.describe_instances(filters: [{name: "tag:Name", values: [@instance_tags[0][:value]]}])
       resp.reservations.each do |reservation|
         reservation.instances.each do |instance|
           instance_ids << instance.instance_id

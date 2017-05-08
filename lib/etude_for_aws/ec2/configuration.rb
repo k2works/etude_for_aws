@@ -1,6 +1,5 @@
 module EC2
   class Configuration
-    include CertificationHelper
     include ConfigurationHelper
 
     attr_accessor :vpc_id,
@@ -9,14 +8,23 @@ module EC2
 
     attr_reader :client,
                 :ec2,
-                :yaml
+                :yaml,
+                :stub
 
     def initialize
-      aws_certificate
-
       @yaml = YAML.load_file('config.yml')
-      @client = Aws::EC2::Client.new
-      @ec2 = Aws::EC2::Resource.new(client: client)
+      @stub = false
+    end
+
+    def stub?
+      @stub == true
+    end
+  end
+
+  class ConfigurationStub < Configuration
+    def initialize
+      super
+      @stub = true
     end
   end
 end

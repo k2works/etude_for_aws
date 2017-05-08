@@ -2,8 +2,9 @@ module EC2
   class SecurityGroup
     attr_accessor :security_group_id
 
-    def initialize(config)
-      @config = config
+    def initialize(ec2)
+      @config = ec2.config
+      @gateway = ec2.gateway
       group_name = @config.yaml['DEV']['EC2']['SECURITY_GROUP_NAME']
       description = @config.yaml['DEV']['EC2']['SECURITY_GROUP_DESCRIPTION']
       vpc_id = @config.vpc_id
@@ -45,18 +46,18 @@ module EC2
 
     def create
       if @security_group_id.nil?
-        sg = @config.ec2.create_security_group(@security_group)
+        sg = @gateway.resource.create_security_group(@security_group)
 
         sg.authorize_egress(@authorize_egress)
         sg.authorize_ingress(@authorize_ingress)
-        @security_group_id = sg.group_id
+        @security_group_id = sg.id
       end
     end
 
     def delete
       resp = nil
       unless @security_group_id.nil?
-        resp = @config.client.delete_security_group({
+        resp = @gateway.client.delete_security_group({
                                                         group_id: @security_group_id,
                                                     })
       end
@@ -66,7 +67,7 @@ module EC2
     private
     def get_group_id
       group_id = nil
-      @config.ec2.security_groups.each do |sg|
+      @gateway.resource.security_groups.each do |sg|
         if sg.group_name == @security_group[:group_name]
           group_id = sg.group_id
         end
