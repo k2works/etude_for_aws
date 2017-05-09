@@ -7,12 +7,13 @@ module VPC
     def create_subnets
       @config.public_subnets.each do |v|
         subnet_cidr_block = v['CONFIG']['SUBNET_CIDR_BLOCK'].first
+        az = v['CONFIG']['AZ'].first
         name = v['CONFIG']['SUBNET_TAGS'].first['NAME']['VALUE']
         key = v['CONFIG']['SUBNET_TAGS'].first['NAME']['KEY']
         subnets = @gateway.select_subnets_by_name(name)
         if subnets.empty?
           subnet = VPC::Subnet.new
-          subnet.create(self,subnet_cidr_block)
+          subnet.create(self,subnet_cidr_block,az)
           resources = [subnet.subnet_id]
           vpc_subnet_name_tag = {key: key, value: name}
           tags = [vpc_subnet_name_tag,@config.vpc_group_tag]
@@ -23,12 +24,13 @@ module VPC
 
       @config.private_subnets.each do |v|
         subnet_cidr_block = v['CONFIG']['SUBNET_CIDR_BLOCK'].first
+        az = v['CONFIG']['AZ'].first
         name = v['CONFIG']['SUBNET_TAGS'].first['NAME']['VALUE']
         key = v['CONFIG']['SUBNET_TAGS'].first['NAME']['KEY']
         subnets = @gateway.select_subnets_by_name(name)
         if subnets.empty?
           subnet = VPC::Subnet.new
-          subnet.create(self,subnet_cidr_block)
+          subnet.create(self,subnet_cidr_block,az)
           resources = [subnet.subnet_id]
           vpc_subnet_name_tag = {key: key, value: name}
           tags = [vpc_subnet_name_tag,@config.vpc_group_tag]

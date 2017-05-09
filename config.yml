@@ -33,6 +33,8 @@ DEV:
                   VALUE: 'TestVpcPublicSubnet1'
             SUBNET_CIDR_BLOCK:
               - '10.0.0.0/24'
+            AZ:
+              - 'us-west-2a'
       PRIVATE:
         - CONFIG:
             SUBNET_TAGS:
@@ -41,6 +43,8 @@ DEV:
                   VALUE: 'TestVpcPrivateSubnet1'
             SUBNET_CIDR_BLOCK:
               - '10.0.1.0/24'
+            AZ:
+              - 'us-west-2a'
     ROUTE_TABLES:
       PUBLIC:
         - CONFIG:
@@ -64,6 +68,9 @@ DEV:
           KEY: 'Name'
           VALUE: 'TestVpcInternetGateway'
   EC2:
+    INSTANCE_TAGS:
+      NAME_VALUE: 'MyGroovyInstance'
+      GROUP_VALUE: 'MyGroovyGroup'
     SECURITY_GROUP_NAME: 'MyGroovySecurityGroup'
     SECURITY_GROUP_DESCRIPTION: 'Security group for MyGroovyInstance'
     KEY_PAIR_NAME: 'my-key-pair'
@@ -72,7 +79,16 @@ DEV:
     INSTANCE_TYPE: 't2.micro'
     MIN_COUNT: '1'
     MAX_COUNT: '1'
-    INSTANCE_TAGS:
-      NAME_VALUE: 'MyGroovyInstance'
-      GROUP_VALUE: 'MyGroovyGroup'
-
+    INSTANCES:
+      PUBLIC:
+        - CONFIG:
+            INSTANCE_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'PublicInstance1'
+      PRIVATE:
+        - CONFIG:
+            INSTANCE_TAGS:
+              - NAME:
+                  KEY: 'Name'
+                  VALUE: 'PrivateInstance1'

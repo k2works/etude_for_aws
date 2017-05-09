@@ -9,12 +9,17 @@ package CFM {
   class CFM::Vpc
 }
 
+package VPC {
+  class VPC::Vpc
+}
+
 Interface CertificationHelper
 Interface ConfigurationHelper
 
 package EC2 {
   Interface VpcInterface
-  VpcInterface <|-u- CFM::Vpc
+  VpcInterface <|-- CFM::Vpc
+  VpcInterface <|-- VPC::Vpc
 
   class Ec2 {
     create()

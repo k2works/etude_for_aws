@@ -9,26 +9,26 @@ EC2
 
 ## ユースケース
 ### パターン1
-![](../images/ec2_type1.png)
+![](images/ec2_type1.png)
 
 ### パターン2
-![](../images/ec2_type2.png)
+![](images/ec2_type2.png)
 
 ### パターン3
-![](../images/ec2_type3.png)
+![](images/ec2_type3.png)
 
 ### パターン4
-![](../images/ec2_type4.png)
+![](images/ec2_type4.png)
 
 ### パターン5
-![](../images/ec2_type5.png)
+![](images/ec2_type5.png)
 
 ### パターン6
-![](../images/ec2_type6.png)
+![](images/ec2_type6.png)
 
 ### パターン7
-![](../images/ec2_type7.png)
+![](images/ec2_type7.png)
 
 
 ## コアモデル
-![](../images/ec2_core_model.png)
+![](images/ec2_core_model.png)

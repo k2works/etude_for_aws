@@ -108,6 +108,32 @@ module VPC
       @private_route_tables = []
       @public_route_tables = []
     end
+
+    def get_vpc_id
+      @vpc_id
+    end
+
+    def get_subnet_infos
+      infos = []
+
+      @public_subnets.each do |public|
+        info = {}
+        info[:subnet_id] = public.subnet_id
+        info[:network] = 'Public'
+        info[:az] = 'us-west-2a'
+        infos << info
+      end
+
+      @private_subnets.each do |private|
+        info = {}
+        info[:subnet_id] = private.subnet_id
+        info[:network] = 'Private'
+        info[:az] = 'us-west-2a'
+        infos << info
+      end
+
+      infos
+    end
   end
 
   class VpcStub < Vpc

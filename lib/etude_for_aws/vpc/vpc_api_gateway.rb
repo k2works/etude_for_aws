@@ -73,10 +73,11 @@ module VPC
       @ec2.delete_vpc({vpc_id: vpc_id})
     end
 
-    def create_subnet(subnet_cidr_block,vpc_id)
+    def create_subnet(subnet_cidr_block,vpc_id,az)
       resp = @ec2.create_subnet({
                                    cidr_block: subnet_cidr_block,
                                    vpc_id: vpc_id,
+                                   availability_zone: az,
                                })
       resp.subnet.subnet_id
     end
