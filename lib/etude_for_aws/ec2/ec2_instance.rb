@@ -32,11 +32,9 @@ module EC2
     end
 
     def terminate
-      values = [@instance_tags[0][:value]]
-      instance_ids = @gateway.get_instance_collection(values)
-      instance_ids.each do |instance_id|
-        i = @gateway.find_instance_by_id(instance_id)
+      i = @gateway.find_instance_by_id(@instance_id)
 
+      unless i.nil?
         if i.exists?
           case i.state.code
             when 48 # terminated
@@ -45,18 +43,13 @@ module EC2
               i.terminate
           end
         end
-        instance_ids
-        @gateway.wait_for_instance_terminated(instance_id)
-        instance_ids = @gateway.get_instance_collection(values)
       end
     end
 
     def start
-      values = [@instance_tags[0][:value]]
-      instance_ids = @gateway.get_instance_collection(values)
-      instance_ids.each do |instance_id|
-        i = @gateway.find_instance_by_id(instance_id)
+      i = @gateway.find_instance_by_id(@instance_id)
 
+      unless i.nil?
         if i.exists?
           case i.state.code
             when 0  # pending
@@ -75,11 +68,9 @@ module EC2
     end
 
     def stop
-      values = [@instance_tags[0][:value]]
-      instance_ids = @gateway.get_instance_collection(values)
-      instance_ids.each do |instance_id|
-        i = @gateway.find_instance_by_id(instance_id)
+      i = @gateway.find_instance_by_id(@instance_id)
 
+      unless i.nil?
         if i.exists?
           case i.state.code
             when 48  # terminated
@@ -98,20 +89,16 @@ module EC2
     end
 
     def reboot
-      values = [@instance_tags[0][:value]]
-      instance_ids = @gateway.get_instance_collection(values)
-      instance_ids.each do |instance_id|
-        i = @gateway.find_instance_by_id(instance_id)
+      i = @gateway.find_instance_by_id(@instance_id)
 
-        if i.exists?
-          case i.state.code
-            when 48  # terminated
-              puts "#{instance_id} is terminated, so you cannot reboot it"
-            else
-              puts "#{instance_id} is rebooting"
-              i.reboot
-              @gateway.wait_for_instance_status_ok(instance_id)
-          end
+      if i.exists?
+        case i.state.code
+          when 48  # terminated
+            puts "#{instance_id} is terminated, so you cannot reboot it"
+          else
+            puts "#{instance_id} is rebooting"
+            i.reboot
+            @gateway.wait_for_instance_status_ok(instance_id)
         end
       end
     end

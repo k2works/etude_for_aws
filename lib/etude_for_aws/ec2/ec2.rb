@@ -126,47 +126,53 @@ module EC2
     end
 
     def start
+      instance_id = 'String'
       @gateway.client.stub_responses(:describe_instances,
                                      {
                                          reservations: [
                                              {
                                                  instances: [
-                                                     instance_id: 'String',
+                                                     instance_id: instance_id,
                                                      state: {'code':89}
                                                  ]
                                              }
                                          ]
                                      })
+      @ec2_instances << Ec2Instance.new(self, instance_id)
       super
     end
 
     def reboot
+      instance_id = 'String'
       @gateway.client.stub_responses(:describe_instances,
                                      {
                                          reservations: [
                                              {
                                                  instances: [
-                                                     instance_id: 'String',
+                                                     instance_id: instance_id,
                                                      state: {'code':16}
                                                  ]
                                              }
                                          ]
                                      })
+      @ec2_instances << Ec2Instance.new(self, instance_id)
       super
     end
 
     def stop
+      instance_id = 'String'
       @gateway.client.stub_responses(:describe_instances,
                                      {
                                          reservations: [
                                              {
                                                  instances: [
-                                                     instance_id: 'String',
+                                                     instance_id: instance_id,
                                                      state: {'code':16}
                                                  ]
                                              }
                                          ]
                                      })
+      @ec2_instances << Ec2Instance.new(self, instance_id)
       super
     end
 
@@ -195,6 +201,7 @@ module EC2
                                              }
                                          ]
                                      })
+      @ec2_instances.first.instance_variable_set :@instance_id,'String' unless @ec2_instances.first.nil?
       super
       @ec2_instances = []
     end
