@@ -157,16 +157,64 @@ end
 
 RSpec.describe VPC::Vpn do
   describe '#create' do
-    it 'customer gateway'
-    it 'virtual gateway'
-    it 'vpn connection'
-    it 'route to internet vpn'
+    let(:vpc_builder) {VPC::VpnDirector.new(VPC::StandardVpcStub.new)}
+
+    before(:each) do
+      vpc_builder.create
+    end
+
+    after(:each) do
+      vpc_builder.destroy
+    end
+
+    it 'customer gateway' do
+      vpc = vpc_builder.builder
+      expect(vpc.vpn.customer_gateway).not_to be_nil
+    end
+
+    it 'virtual gateway' do
+      vpc = vpc_builder.builder
+      expect(vpc.vpn.virtual_gateway).not_to be_nil
+    end
+
+    it 'vpn connection' do
+      vpc = vpc_builder.builder
+      expect(vpc.vpn.vpn_connection).not_to be_nil
+    end
+
+    it 'route to internet vpn' do
+      vpc = vpc_builder.builder
+      expect(vpc.route_tables).not_to be_nil
+    end
   end
 
   describe '#destroy' do
-    it 'customer gateway'
-    it 'virtual gateway'
-    it 'vpn connection'
-    it 'route to internet vpn'
+    let(:vpc_builder) {VPC::VpnDirector.new(VPC::StandardVpcStub.new)}
+
+    before(:each) do
+      vpc_builder.create
+      vpc_builder.destroy
+    end
+
+    it 'customer gateway' do
+      vpc = vpc_builder.builder
+      expect(vpc.vpn.customer_gateway).to be_nil
+    end
+
+    it 'virtual gateway' do
+      vpc = vpc_builder.builder
+      expect(vpc.vpn.virtual_gateway).to be_nil
+    end
+
+    it 'vpn connection' do
+      vpc = vpc_builder.builder
+      expect(vpc.vpn.vpn_connection).to be_nil
+    end
+
+    it 'route to internet vpn' do
+      vpc = vpc_builder.builder
+      expect(vpc.route_tables).to be_empty
+    end
+
   end
 end

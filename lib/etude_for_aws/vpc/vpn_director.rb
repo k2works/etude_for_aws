@@ -1,0 +1,59 @@
+module VPC
+  class VpnDirector
+    attr_accessor :builder
+
+    def initialize(vpc_builder)
+      @builder = vpc_builder
+    end
+
+    def create
+      begin
+
+        @builder.create_vpc
+
+        @builder.create_subnets
+
+        @builder.create_internet_gateway
+
+        @builder.create_route_table
+
+        @builder.create_customer_gateway
+
+        @builder.create_virtual_gateway
+
+        @builder.create_vpn_connection
+
+        @builder.create_route
+
+      rescue Exception => e
+        puts "Error occurred (#{e.class})"
+        throw e
+      end
+    end
+
+    def destroy
+      begin
+
+        @builder.delete_route_tables
+
+        @builder.delete_internet_gateway
+
+        @builder.delete_subnets
+
+        @builder.delete_vpc
+
+        @builder.delete_customer_gateway
+
+        @builder.delete_virtual_gateway
+
+        @builder.delete_vpn_connection
+
+        @builder.delete_route
+
+      rescue Exception => e
+        puts "Error occurred (#{e.class})"
+        throw e
+      end
+    end
+  end
+end
