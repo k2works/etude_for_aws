@@ -4,6 +4,10 @@ package Aws {
   class CloudFormation
 }
 
+package EC2 {
+  Interface VpcInterface
+}
+
 Interface CertificationHelper
 Interface ConfigurationHelper
 
@@ -12,6 +16,8 @@ package CFM {
     create()
     destroy()
   }
+
+  Vpc <|-- VpcInterface
   CertificationHelper <|-- Configuration
   ConfigurationHelper <|-- Configuration
   Configuration -l-> CloudFormation

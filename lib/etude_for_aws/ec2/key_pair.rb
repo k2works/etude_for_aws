@@ -2,15 +2,16 @@ module EC2
   class KeyPair
     attr_reader :key_pair_name,:pem_file
 
-    def initialize(config)
-      @config = config
-      @key_pair_name = @config.yaml['DEV']['EC2']['KEY_PAIR_NAME']
-      path = Dir.pwd + @config.yaml['DEV']['EC2']['KEY_PAIR_PATH']
+    def initialize(ec2)
+      @config = ec2.config
+      @gateway = ec2.gateway
+      @key_pair_name = @config.key_pair_name
+      path = Dir.pwd + @config.key_pair_path
       @pem_file = path + "#{@key_pair_name}.pem"
     end
 
     def create
-      key_pairs_result = @config.client.describe_key_pairs()
+      key_pairs_result = @gateway.select_key_pairs
       key_pairs = []
       if key_pairs_result.key_pairs.count > 0
         key_pairs_result.key_pairs.each do |key_pair|
@@ -20,9 +21,7 @@ module EC2
 
       unless key_pairs.include?(@key_pair_name)
         begin
-          key_pair = @config.client.create_key_pair({
-                                                        key_name: @key_pair_name
-                                                    })
+          key_pair = @gateway.create_key_pairs(@key_pair_name)
           puts "Created key pair '#{key_pair.key_name}'."
           puts "\nSHA-1 digest of the DER encoded private key:"
           puts "#{key_pair.key_fingerprint}"
@@ -40,9 +39,7 @@ module EC2
     end
 
     def delete
-      @config.client.delete_key_pair({
-                                         key_name: @key_pair_name
-                                     })
+      @gateway.delete_key_pairs(@key_pair_name)
       FileUtils.rm(@pem_file)
     end
   end

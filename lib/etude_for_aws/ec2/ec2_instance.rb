@@ -1,51 +1,40 @@
 module EC2
   class Ec2Instance
-    def initialize(config)
-      @config = config
+    attr_reader :instance_id
+
+    def initialize(ec2,instance_id=nil)
+      @config = ec2.config
+      @gateway = ec2.gateway
       script = ''
       @encoded_script = Base64.encode64(script)
-      @image_id = @config.yaml['DEV']['EC2']['IMAGE_ID']
-      @instance_type = @config.yaml['DEV']['EC2']['INSTANCE_TYPE']
-      @min_count = @config.yaml['DEV']['EC2']['MIN_COUNT'].to_i
-      @max_count = @config.yaml['DEV']['EC2']['MAX_COUNT'].to_i
-      name_value = @config.yaml['DEV']['EC2']['INSTANCE_TAGS']['NAME_VALUE']
-      group_value = @config.yaml['DEV']['EC2']['INSTANCE_TAGS']['GROUP_VALUE']
-      @instance_tags = [{key: 'Name', value: name_value}, {key: 'Group', value: group_value}]
+      @image_id = @config.image_id
+      @instance_type = @config.instance_type
+      @min_count = @config.min_count
+      @max_count = @config.max_count
+      @instance_tags = @config.instance_tags
+      @instance_id = instance_id
     end
 
     def create(security_group,key_pair)
-      instance = @config.ec2.create_instances({
-                                                  image_id: @image_id,
-                                                  min_count: @min_count,
-                                                  max_count: @max_count,
-                                                  key_name: key_pair.key_pair_name,
-                                                  user_data: @encoded_script,
-                                                  instance_type: @instance_type,
-                                                  placement: {
-                                                      availability_zone: @config.az
-                                                  },
-                                                  network_interfaces: [
-                                                      {
-                                                          device_index: 0,
-                                                          subnet_id: @config.subnet_id,
-                                                          associate_public_ip_address: true,
-                                                          groups: [security_group.security_group_id],
-                                                      },
-                                                  ],
-                                              })
+      instance = @gateway.create_instances(@image_id,
+                                  @min_count,
+                                  @max_count,
+                                  key_pair.key_pair_name,
+                                  security_group,
+                                  @encoded_script,
+                                  @instance_type,
+                                  @config)
 
-      @config.ec2.client.wait_until(:instance_status_ok, {instance_ids: [instance[0].id]})
-
+      instance.empty? ? @instance_id = nil : @instance_id = instance.first.id
+      @gateway.wait_for_instance_status_ok(@instance_id)
       instance.create_tags({tags: @instance_tags})
-
       instance
     end
 
     def terminate
-      instance_ids = get_instance_collection
-      instance_ids.each do |instance_id|
-        i = @config.ec2.instance(instance_id)
+      i = @gateway.find_instance_by_id(@instance_id)
 
+      unless i.nil?
         if i.exists?
           case i.state.code
             when 48 # terminated
@@ -54,20 +43,64 @@ module EC2
               i.terminate
           end
         end
-
-        @config.ec2.client.wait_until(:instance_terminated, {instance_ids: [instance_id]})
       end
     end
 
-    def get_instance_collection
-      instance_ids = []
-      resp = @config.client.describe_instances(filters: [{name: "tag:Name", values: [@instance_tags[0][:value]]}])
-      resp.reservations.each do |reservation|
-        reservation.instances.each do |instance|
-          instance_ids << instance.instance_id
+    def start
+      i = @gateway.find_instance_by_id(@instance_id)
+
+      unless i.nil?
+        if i.exists?
+          case i.state.code
+            when 0  # pending
+              puts "#{instance_id} is pending, so it will be running in a bit"
+            when 16  # started
+              puts "#{instance_id} is already started"
+            when 48  # terminated
+              puts "#{instance_id} is terminated, so you cannot start it"
+            else
+              puts "#{instance_id} is starting"
+              i.start
+              @gateway.wait_for_instance_running(instance_id)
+          end
         end
       end
-      instance_ids
+    end
+
+    def stop
+      i = @gateway.find_instance_by_id(@instance_id)
+
+      unless i.nil?
+        if i.exists?
+          case i.state.code
+            when 48  # terminated
+              puts "#{instance_id} is terminated, so you cannot stop it"
+            when 64  # stopping
+              puts "#{instance_id} is stopping, so it will be stopped in a bit"
+            when 89  # stopped
+              puts "#{instance_id} is already stopped"
+            else
+              puts "#{instance_id} is stopping"
+              i.stop
+              @gateway.wait_for_instance_stopped(instance_id)
+          end
+        end
+      end
+    end
+
+    def reboot
+      i = @gateway.find_instance_by_id(@instance_id)
+
+      if i.exists?
+        case i.state.code
+          when 48  # terminated
+            puts "#{instance_id} is terminated, so you cannot reboot it"
+          else
+            puts "#{instance_id} is rebooting"
+            i.reboot
+            @gateway.wait_for_instance_status_ok(instance_id)
+        end
+      end
     end
   end
 end

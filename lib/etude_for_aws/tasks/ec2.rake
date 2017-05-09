@@ -3,6 +3,80 @@ require 'etude_for_aws'
 namespace :EC2 do
   task :default => :create_type01_env
 
+  desc 'シンプルなVPC環境にEC2インスタンスを作成する'
+  task :create_simple_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::SimpleVpc.new)
+    vpc_director.create
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).create
+  end
+
+  desc 'シンプルなVPC環境のEC2インスタンスを削除する'
+  task :destroy_simple_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::SimpleVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).destroy
+    vpc_director.destroy
+  end
+
+  desc 'シンプルなVPC環境にEC2インスタンス起動する'
+  task :start_simple_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::SimpleVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).start
+  end
+
+  desc 'シンプルなVPC環境にEC2インスタンス再起動する'
+  task :reboot_simple_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::SimpleVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).reboot
+  end
+
+  desc 'シンプルなVPC環境にEC2インスタンス停止する'
+  task :stop_simple_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::SimpleVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).stop
+  end
+
+  desc '標準的なVPC環境にEC2インスタンスを作成する'
+  task :create_standard_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::StandardVpc.new)
+    vpc_director.create
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).create
+  end
+
+  desc '標準的なVPC環境のEC2インスタンスを削除する'
+  task :destroy_standard_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::StandardVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).destroy
+    vpc_director.destroy
+  end
+
+  desc '標準的なVPC環境にEC2インスタンスを起動する'
+  task :start_standard_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::StandardVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).start
+  end
+
+  desc '標準的なVPC環境にEC2インスタンスを再起動する'
+  task :reboot_standard_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::StandardVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).reboot
+  end
+
+  desc '標準的なVPC環境にEC2インスタンスを停止する'
+  task :stop_standard_vpc_env do
+    vpc_director = VPC::VpcDirector.new(VPC::StandardVpc.new)
+    vpc = vpc_director.builder
+    EC2::Ec2.new(vpc).stop
+  end
+
   desc '１つのアベイラビリティゾーンに１つのパブリックサブネットのVPC環境を作成する'
   task :setup_type01_env => [:create_type01,:copy_key_pair] do
     puts '１つのアベイラビリティゾーンに１つのパブリックサブネットのVPC環境を作成しました。'

@@ -88,4 +88,12 @@ module ConfigurationHelper
   def get_yaml_destination_cidr_block
     ConfigurationHelper.load_yaml_file['DEV']['VPC']['DESTINATION_CIDR_BLOCK']
   end
+
+  def get_yaml_ec2_config
+    ConfigurationHelper.load_yaml_file['DEV']['EC2']
+  end
+
+  def get_yaml_ec2_instances
+    ConfigurationHelper.load_yaml_file['DEV']['EC2']['INSTANCES']
+  end
 end

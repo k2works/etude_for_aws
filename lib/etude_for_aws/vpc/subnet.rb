@@ -2,8 +2,8 @@ module VPC
   class Subnet
     attr_accessor :subnet_id
 
-    def create(vpc,subnet_cidr_block)
-      @subnet_id = vpc.gateway.create_subnet(subnet_cidr_block,vpc.vpc_id)
+    def create(vpc,subnet_cidr_block,az)
+      @subnet_id = vpc.gateway.create_subnet(subnet_cidr_block,vpc.vpc_id,az)
     end
 
     def create_private(vpc)
