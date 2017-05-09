@@ -125,6 +125,15 @@ module VPC
       resp.return
     end
 
+    def create_route_vpn(destination_cidr_block,vpc_gateway_id,route_table_id)
+      resp = @ec2.create_route({
+                                   destination_cidr_block: destination_cidr_block,
+                                   gateway_id: vpc_gateway_id,
+                                   route_table_id: route_table_id,
+                               })
+      resp.return
+    end
+
     def create_route_private(destination_cidr_block,route_table_id)
       resp = @ec2.create_route({
                                    destination_cidr_block: destination_cidr_block,

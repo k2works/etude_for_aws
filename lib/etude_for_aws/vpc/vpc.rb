@@ -18,7 +18,6 @@ module VPC
     def initialize
       @config = VPC::Configuration.new
       @gateway = VPC::VpcApiGateway.new
-      @vpn = VPC::Vpn.new
 
       @public_subnets = []
       @private_subnets = []
@@ -109,38 +108,6 @@ module VPC
       @route_tables = []
       @private_route_tables = []
       @public_route_tables = []
-    end
-
-    def create_customer_gateway
-      @vpn.create_customer_gateway
-    end
-
-    def create_virtual_gateway
-      @vpn.create_virtual_gateway
-    end
-
-    def create_vpn_connection
-      @vpn.create_vpn_connection
-    end
-
-    def create_route
-      @vpn.create_route
-    end
-
-    def delete_customer_gateway
-      @vpn.delete_customer_gateway
-    end
-
-    def delete_virtual_gateway
-      @vpn.delete_virtual_gateway
-    end
-
-    def delete_vpn_connection
-      @vpn.delete_vpn_connection
-    end
-
-    def delete_route
-      @vpn.delete_route
     end
 
     def get_vpc_id

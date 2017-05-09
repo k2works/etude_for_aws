@@ -9,17 +9,11 @@ module VPC
     def create
       begin
 
-        @builder.create_vpc
-
-        @builder.create_subnets
-
-        @builder.create_internet_gateway
-
-        @builder.create_route_table
-
         @builder.create_customer_gateway
 
         @builder.create_virtual_gateway
+
+        @builder.attach_vpn_gateway
 
         @builder.create_vpn_connection
 
@@ -34,21 +28,15 @@ module VPC
     def destroy
       begin
 
-        @builder.delete_route_tables
-
-        @builder.delete_internet_gateway
-
-        @builder.delete_subnets
-
-        @builder.delete_vpc
-
-        @builder.delete_customer_gateway
-
-        @builder.delete_virtual_gateway
+        @builder.delete_route
 
         @builder.delete_vpn_connection
 
-        @builder.delete_route
+        @builder.detach_vpn_gateway
+
+        @builder.delete_virtual_gateway
+
+        @builder.delete_customer_gateway
 
       rescue Exception => e
         puts "Error occurred (#{e.class})"
