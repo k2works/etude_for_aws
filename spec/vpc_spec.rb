@@ -154,3 +154,19 @@ RSpec.describe VPC::StandardVpc do
     end
   end
 end
+
+RSpec.describe VPC::Vpn do
+  describe '#create' do
+    it 'customer gateway'
+    it 'virtual gateway'
+    it 'vpn connection'
+    it 'route to internet vpn'
+  end
+
+  describe '#destroy' do
+    it 'customer gateway'
+    it 'virtual gateway'
+    it 'vpn connection'
+    it 'route to internet vpn'
+  end
+end
