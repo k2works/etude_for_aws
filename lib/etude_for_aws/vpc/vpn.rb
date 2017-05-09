@@ -4,7 +4,8 @@ module VPC
                 :customer_gateway,
                 :virtual_gateway,
                 :vpn_connection,
-                :route_tables
+                :route_tables,
+                :stub
 
     def initialize(vpc)
       @vpc = vpc
@@ -12,6 +13,11 @@ module VPC
       @gateway = vpc.gateway
       @route_tables = []
       @vpc_tags = @config.get_yaml_vpc_tags
+      @stub = false
+    end
+
+    def stub?
+      @stub
     end
 
     def create_customer_gateway
@@ -66,24 +72,13 @@ module VPC
     end
 
     def create_route
-      @vpc.private_subnets.each do |subnet|
-        @config.private_route_tables.each do |v|
-          destination_cidr_block = v['CONFIG']['DESTINATION_CIDR_BLOCK'].first
-          name = v['CONFIG']['ROUTE_TABLE_TAGS'].first['NAME']['VALUE']
-          key = v['CONFIG']['ROUTE_TABLE_TAGS'].first['NAME']['KEY']
-          route_tables = @gateway.select_route_tables_by_name(name)
-          if route_tables.empty?
-            route_table = VPC::RouteTable.new
-            route_table.create(@vpc)
-            route_table.create_vpn_route(@vpc,destination_cidr_block,@virtual_gateway[0].vpn_gateway_id)
-            route_table.associate_route_table(@vpc,route_table.route_table_id,subnet.subnet_id)
-
-            resources = [route_table.route_table_id]
-            vpc_subnet_name_tag = {key: key, value: name}
-            tags = [vpc_subnet_name_tag,@config.vpc_group_tag]
-            @gateway.create_tags(resources,tags)
-            @route_tables << route_table
-          end
+      @config.private_route_tables.each do |v|
+        destination_cidr_block = '192.168.0.0/16'
+        name = v['CONFIG']['ROUTE_TABLE_TAGS'].first['NAME']['VALUE']
+        route_tables = @gateway.select_route_tables_by_name(name)
+        route_tables.each do |route_table|
+          @gateway.create_route_vpn(destination_cidr_block,@virtual_gateway[0].vpn_gateway_id,route_table.route_table_id)
+          @route_tables << route_table
         end
       end
     end
@@ -177,6 +172,11 @@ module VPC
   end
 
   class VpnStub < Vpn
+    def initialize(vpc)
+      super
+      @stub = true
+    end
+
     def delete_customer_gateway
       @gateway.ec2.stub_responses(:describe_customer_gateways,
                                      {
