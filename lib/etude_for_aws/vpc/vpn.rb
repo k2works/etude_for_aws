@@ -92,7 +92,7 @@ module VPC
       resp = @gateway.ec2.describe_customer_gateways({
                                                    filters: [
                                                        {
-                                                           name: "Name",
+                                                           name: "tag-value",
                                                            values: ["TestCustomerGateway"],
                                                        },
                                                    ],
@@ -110,7 +110,7 @@ module VPC
       resp = @gateway.ec2.describe_vpn_gateways({
                                                          filters: [
                                                              {
-                                                                 name: "Name",
+                                                                 name: "tag-value",
                                                                  values: ["TestVpnGateway"],
                                                              },
                                                          ],
@@ -129,7 +129,7 @@ module VPC
       resp = @gateway.ec2.describe_vpn_gateways({
                                                     filters: [
                                                         {
-                                                            name: "Name",
+                                                            name: "tag-value",
                                                             values: ["TestVpnGateway"],
                                                         },
                                                     ],
@@ -149,7 +149,7 @@ module VPC
       resp = @gateway.ec2.describe_vpn_connections({
                                                     filters: [
                                                         {
-                                                            name: "Name",
+                                                            name: "tag-value",
                                                             values: ["TestVpnConnection"],
                                                         },
                                                     ],
