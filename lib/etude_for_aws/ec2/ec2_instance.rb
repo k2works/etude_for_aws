@@ -38,9 +38,10 @@ module EC2
         if i.exists?
           case i.state.code
             when 48 # terminated
-              puts "#{instance_id} is already terminated"
+              puts "#{@instance_id} is already terminated"
             else
               i.terminate
+              @gateway.wait_for_instance_terminated(@instance_id)
           end
         end
       end
