@@ -133,7 +133,8 @@ module VPC
       value = @config.get_vpn_gateway['TAGS']['NAME']['VALUE']
       vpn_gateways = @gateway.select_vpc_gateways_by_name(value)
       unless vpn_gateways.empty?
-        @vpn_gateway = vpn_gateways[0]
+        vpn_gateway_id = vpn_gateways[0].vpn_gateway_id
+        @vpn_gateway = VpnGateway.new(@config,@gateway,vpn_gateway_id)
       end
     end
 
