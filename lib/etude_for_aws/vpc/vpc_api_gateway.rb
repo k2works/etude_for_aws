@@ -220,7 +220,13 @@ module VPC
 
     def attach_vpn_gateway(vpn_gateway_id,vpc_id)
       @ec2.attach_vpn_gateway({
-                                  dry_run: false,
+                                  vpn_gateway_id: vpn_gateway_id,
+                                  vpc_id: vpc_id,
+                              })
+    end
+
+    def detach_vpn_gateway(vpn_gateway_id,vpc_id)
+      @ec2.detach_vpn_gateway({
                                   vpn_gateway_id: vpn_gateway_id,
                                   vpc_id: vpc_id,
                               })

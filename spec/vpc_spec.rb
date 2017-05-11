@@ -184,17 +184,17 @@ RSpec.describe VPC::Vpn do
 
     it 'customer gateway' do
       vpn = create_vpn
-      expect(vpn.customer_gateway).not_to be_nil
+      expect(vpn.customer_gateways).not_to be_empty
     end
 
-    it 'virtual gateway' do
+    it 'vpn gateway' do
       vpn = create_vpn
-      expect(vpn.virtual_gateway).not_to be_nil
+      expect(vpn.vpn_gateway).not_to be_nil
     end
 
     it 'vpn connection' do
       vpn = create_vpn
-      expect(vpn.vpn_connection).not_to be_nil
+      expect(vpn.vpn_connections).not_to be_empty
     end
 
     it 'route to internet vpn' do
@@ -212,17 +212,17 @@ RSpec.describe VPC::Vpn do
 
     it 'customer gateway' do
       vpn = destroy_vpn
-      expect(vpn.customer_gateway.to_s).to eq('#<struct Aws::EmptyStructure>')
+      expect(vpn.customer_gateways.first.to_s).to eq('#<struct Aws::EmptyStructure>')
     end
 
-    it 'virtual gateway' do
+    it 'vpn gateway' do
       vpn = destroy_vpn
-      expect(vpn.virtual_gateway.to_s).to eq('#<struct Aws::EmptyStructure>')
+      expect(vpn.vpn_gateway.to_s).to eq('#<struct Aws::EmptyStructure>')
     end
 
     it 'vpn connection' do
       vpn = destroy_vpn
-      expect(vpn.vpn_connection.to_s).to eq('#<struct Aws::EmptyStructure>')
+      expect(vpn.vpn_connections.first.to_s).to eq('#<struct Aws::EmptyStructure>')
     end
 
     it 'route to internet vpn' do

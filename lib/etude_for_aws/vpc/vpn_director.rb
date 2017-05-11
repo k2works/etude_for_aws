@@ -11,7 +11,7 @@ module VPC
 
         @builder.create_customer_gateway
 
-        @builder.create_virtual_gateway
+        @builder.create_vpn_gateway
 
         @builder.attach_vpn_gateway
 
@@ -34,7 +34,7 @@ module VPC
 
         @builder.detach_vpn_gateway
 
-        @builder.delete_virtual_gateway
+        @builder.delete_vpn_gateway
 
         @builder.delete_customer_gateway
 
