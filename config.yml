@@ -67,6 +67,36 @@ DEV:
         NAME:
           KEY: 'Name'
           VALUE: 'TestVpcInternetGateway'
+    VPN:
+      CUSTOMER_GATEWAYS:
+        - CONFIG:
+            CUSTOMER_GATEWAY:
+              BGP_ASN: '65534'
+              PUBLIC_IP: '110.4.157.54'
+              TYPE: 'ipsec.1'
+              TAGS:
+                NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestCustomerGateway'
+      VPN_GATEWAY:
+        TYPE: 'ipsec.1'
+        DESTINATION_CIDR_BLOCKS:
+          - CIDR: '192.168.0.0/16'
+        TAGS:
+          NAME:
+            KEY: 'Name'
+            VALUE: 'TestVpnGateway'
+      VPN_CONNECTIONS:
+        - CONFIG:
+            VPN_CONNECTION:
+              TYPE: 'ipsec.1'
+              OPTIONS:
+                STATIC_ROUTES_ONLY: true
+              TAGS:
+                NAME:
+                  KEY: 'Name'
+                  VALUE: 'TestVpnConnection'
+
   EC2:
     INSTANCE_TAGS:
       NAME_VALUE: 'MyGroovyInstance'

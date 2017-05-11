@@ -12,7 +12,8 @@ module VPC
                 :private_route_tables,
                 :internet_gateway,
                 :vpc_name_tag,
-                :vpc_group_tag
+                :vpc_group_tag,
+                :vpn_info
 
     def initialize
       vpc_tags = get_yaml_vpc_tags
@@ -46,11 +47,26 @@ module VPC
 
       @vpc_name_tag = {key: vpc_tags['NAME']['KEY'], value: @vpc_name}
       @vpc_group_tag = {key: vpc_tags['GROUP']['KEY'], value: @vpc_group_name}
+
+      @vpn_info = get_yaml_vpn_info
     end
 
     def get_internet_gateway_name
       internet_gateway['IG_TAGS']['NAME']['VALUE']
     end
+
+    def get_vpn_customer_gateways
+      vpn_info['CUSTOMER_GATEWAYS']
+    end
+
+    def get_vpn_gateway
+      vpn_info['VPN_GATEWAY']
+    end
+
+    def get_vpn_connections
+      vpn_info['VPN_CONNECTIONS']
+    end
+
   end
 
   class ConfigurationStub < Configuration
