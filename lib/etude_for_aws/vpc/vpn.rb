@@ -27,12 +27,8 @@ module VPC
         bgp_asn = customer_gateway_info['BGP_ASN']
         public_ip = customer_gateway_info['PUBLIC_IP']
         type = customer_gateway_info['TYPE']
-        resp = @gateway.ec2.create_customer_gateway({
-                                                        bgp_asn: bgp_asn,
-                                                        public_ip: public_ip,
-                                                        type: type,
-                                                    })
-        @customer_gateway = resp
+        @customer_gateway = @gateway.create_customer_gateway(bgp_asn,public_ip,type)
+
         resources = [@customer_gateway[0].customer_gateway_id]
         customer_gateway_tags = customer_gateway_info['TAGS']
         tag = {key: customer_gateway_tags['NAME']['KEY'], value: customer_gateway_tags['NAME']['VALUE']}
@@ -44,10 +40,8 @@ module VPC
     def create_virtual_gateway
       vpn_gateway_info = @config.get_vpn_gateway
       type = vpn_gateway_info['TYPE']
-      resp = @gateway.ec2.create_vpn_gateway({
-                                           type: type
-                                       })
-      @virtual_gateway = resp
+
+      @virtual_gateway = @gateway.create_vpn_gateway(type)
 
       resources = [@virtual_gateway[0].vpn_gateway_id]
       vpn_gateway_tags = vpn_gateway_info['TAGS']
@@ -57,13 +51,9 @@ module VPC
     end
 
     def attach_vpn_gateway
-      resp = @gateway.ec2.attach_vpn_gateway({
-                                                 dry_run: false,
-                                                 vpn_gateway_id: @virtual_gateway[0].vpn_gateway_id,
-                                                 vpc_id: @vpc.vpc_id,
-                                             })
-
-      resp
+      vpn_gateway_id = @virtual_gateway[0].vpn_gateway_id
+      vpc_id = @vpc.vpc_id
+      @gateway.attach_vpn_gateway(vpn_gateway_id,vpc_id)
     end
 
     def create_vpn_connection
@@ -71,16 +61,11 @@ module VPC
       vpn_connections_info.each do |vpn_connection_config|
         vpn_connection_info = vpn_connection_config['CONFIG']['VPN_CONNECTION']
         type = vpn_connection_info['TYPE']
+        customer_gateway_id = @customer_gateway[0].customer_gateway_id
+        vpn_gateway_id = @virtual_gateway[0].vpn_gateway_id
         static_routes_only = vpn_connection_info['OPTIONS']['STATIC_ROUTES_ONLY']
-        resp = @gateway.ec2.create_vpn_connection({
-                                                      type: type,
-                                                      customer_gateway_id: @customer_gateway[0].customer_gateway_id,
-                                                      vpn_gateway_id: @virtual_gateway[0].vpn_gateway_id,
-                                                      options: {
-                                                          static_routes_only: static_routes_only,
-                                                      },
-                                                  })
-        @vpn_connection = resp
+        @vpn_connection = @gateway.create_vpn_connection(type,customer_gateway_id,vpn_gateway_id,static_routes_only)
+
         resources = [@vpn_connection[0].vpn_connection_id]
         vpn_connection_tags = vpn_connection_info['TAGS']
         tag = {key: vpn_connection_tags['NAME']['KEY'], value: vpn_connection_tags['NAME']['VALUE']}
@@ -109,57 +94,29 @@ module VPC
         tags = customer_gateway_config['CONFIG']['CUSTOMER_GATEWAY']['TAGS']
 
         value = tags['NAME']['VALUE']
-        resp = @gateway.ec2.describe_customer_gateways({
-                                                           filters: [
-                                                               {
-                                                                   name: "tag-value",
-                                                                   values: [value],
-                                                               },
-                                                           ],
-                                                       })
-        unless resp.customer_gateways.empty?
-          customer_gateway_id = resp.customer_gateways[0].customer_gateway_id
-          resp = @gateway.ec2.delete_customer_gateway({
-                                                          customer_gateway_id: customer_gateway_id,
-                                                      })
-          @customer_gateway = resp
+        customer_gateways = @gateway.select_customer_gateways_by_name(value)
+
+        unless customer_gateways.empty?
+          customer_gateway_id = customer_gateways[0].customer_gateway_id
+          @customer_gateway = @gateway.delete_customer_gateway(customer_gateway_id)
         end
       end
     end
 
     def delete_virtual_gateway
       value = @config.get_vpn_gateway['TAGS']['NAME']['VALUE']
-      resp = @gateway.ec2.describe_vpn_gateways({
-                                                         filters: [
-                                                             {
-                                                                 name: "tag-value",
-                                                                 values: [value],
-                                                             },
-                                                         ],
-                                                     })
-      unless resp.vpn_gateways.empty?
-        vpn_gateway_id = resp.vpn_gateways[0].vpn_gateway_id
-        resp = @gateway.ec2.delete_vpn_gateway({
-                                             dry_run: false,
-                                             vpn_gateway_id: vpn_gateway_id,
-                                         })
-        @virtual_gateway = resp
+      vpn_gateways = @gateway.select_vpc_gateways_by_name(value)
+      unless vpn_gateways.empty?
+        vpn_gateway_id = vpn_gateways[0].vpn_gateway_id
+        @virtual_gateway = @gateway.delete_vpn_gateway(vpn_gateway_id)
       end
     end
 
     def detach_vpn_gateway
       value = @config.get_vpn_gateway['TAGS']['NAME']['VALUE']
-      resp = @gateway.ec2.describe_vpn_gateways({
-                                                    filters: [
-                                                        {
-                                                            name: "tag-value",
-                                                            values: [value],
-                                                        },
-                                                    ],
-                                                })
-
-      unless resp.vpn_gateways.empty?
-        vpn_gateway_id = resp.vpn_gateways[0].vpn_gateway_id
+      vpn_gateways = @gateway.select_vpc_gateways_by_name(value)
+      unless vpn_gateways.empty?
+        vpn_gateway_id = vpn_gateways[0].vpn_gateway_id
         resp = @gateway.ec2.detach_vpn_gateway({
                                              vpn_gateway_id: vpn_gateway_id,
                                              vpc_id: @vpc.vpc_id,
@@ -173,21 +130,11 @@ module VPC
       vpn_connections_info.each do |vpn_connection_config|
         tags = vpn_connection_config['CONFIG']['VPN_CONNECTION']['TAGS']
         value = tags['NAME']['VALUE']
-        resp = @gateway.ec2.describe_vpn_connections({
-                                                         filters: [
-                                                             {
-                                                                 name: "tag-value",
-                                                                 values: [value],
-                                                             },
-                                                         ],
-                                                     })
+        vpn_connections = @gateway.select_vpn_connections_by_name(value)
 
-        unless resp.vpn_connections.empty?
-          vpn_connection_id = resp.vpn_connections[0].vpn_connection_id
-          resp = @gateway.ec2.delete_vpn_connection({
-                                                        vpn_connection_id: vpn_connection_id,
-                                                    })
-          @vpn_connection = resp
+        unless vpn_connections.empty?
+          vpn_connection_id = vpn_connections[0].vpn_connection_id
+          @vpn_connection = @gateway.delete_vpn_connection(vpn_connection_id)
         end
       end
     end
