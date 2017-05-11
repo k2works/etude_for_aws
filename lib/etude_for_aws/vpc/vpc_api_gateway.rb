@@ -7,6 +7,11 @@ module VPC
     def initialize
       aws_certificate
       @ec2 = Aws::EC2::Client.new
+      @stub = false
+    end
+
+    def stub?
+      @stub
     end
 
     def select_vpcs_by_name(name)
@@ -125,6 +130,15 @@ module VPC
       resp.return
     end
 
+    def create_route_vpn(destination_cidr_block,vpc_gateway_id,route_table_id)
+      resp = @ec2.create_route({
+                                   destination_cidr_block: destination_cidr_block,
+                                   gateway_id: vpc_gateway_id,
+                                   route_table_id: route_table_id,
+                               })
+      resp.return
+    end
+
     def create_route_private(destination_cidr_block,route_table_id)
       resp = @ec2.create_route({
                                    destination_cidr_block: destination_cidr_block,
@@ -151,6 +165,101 @@ module VPC
       @ec2.delete_route_table({route_table_id: route_table_id})
     end
 
+    def select_customer_gateways_by_name(name)
+      @ec2.describe_customer_gateways({
+                                          filters: [
+                                              {
+                                                  name: "tag-value",
+                                                  values: [name],
+                                              },
+                                          ],
+                                      }).customer_gateways
+    end
+
+    def select_vpc_gateways_by_name(name)
+      @ec2.describe_vpn_gateways({
+                                     filters: [
+                                         {
+                                             name: "tag-value",
+                                             values: [name],
+                                         },
+                                     ],
+                                 }).vpn_gateways
+    end
+
+    def select_vpn_connections_by_name(name)
+      @ec2.describe_vpn_connections({
+                                        filters: [
+                                            {
+                                                name: "tag-value",
+                                                values: [name],
+                                            },
+                                        ],
+                                    }).vpn_connections
+    end
+
+    def create_customer_gateway(bgp_asn,public_ip,type)
+      @ec2.create_customer_gateway({
+                                       bgp_asn: bgp_asn,
+                                       public_ip: public_ip,
+                                       type: type,
+                                   })
+    end
+
+    def delete_customer_gateway(customer_gateway_id)
+      @ec2.delete_customer_gateway({
+                                       customer_gateway_id: customer_gateway_id,
+                                   })
+    end
+
+    def create_vpn_gateway(type)
+      @ec2.create_vpn_gateway({
+                                  type: type
+                              })
+    end
+
+    def attach_vpn_gateway(vpn_gateway_id,vpc_id)
+      @ec2.attach_vpn_gateway({
+                                  vpn_gateway_id: vpn_gateway_id,
+                                  vpc_id: vpc_id,
+                              })
+    end
+
+    def detach_vpn_gateway(vpn_gateway_id,vpc_id)
+      @ec2.detach_vpn_gateway({
+                                  vpn_gateway_id: vpn_gateway_id,
+                                  vpc_id: vpc_id,
+                              })
+    end
+
+    def delete_vpn_gateway(vpn_gateway_id)
+      @ec2.delete_vpn_gateway({
+                                          vpn_gateway_id: vpn_gateway_id,
+                                      })
+    end
+
+    def create_vpn_connection(type,customer_gateway_id,vpn_gateway_id,static_routes_only)
+      @ec2.create_vpn_connection({
+                                                    type: type,
+                                                    customer_gateway_id: customer_gateway_id,
+                                                    vpn_gateway_id: vpn_gateway_id,
+                                                    options: {
+                                                        static_routes_only: static_routes_only,
+                                                    },
+                                                })
+    end
+
+    def delete_vpn_connection(vpn_connection_id)
+      @ec2.delete_vpn_connection({
+                                     vpn_connection_id: vpn_connection_id,
+                                 })
+    end
+
+    def wait_for_vpn_connection_available(vpn_connection_id)
+      @ec2.wait_until(:vpn_connection_available, {vpn_connection_ids: [vpn_connection_id]}) unless stub?
+    end
+
+
     private
     def set_filter_tag_value(name)
       {
@@ -162,6 +271,7 @@ module VPC
   class VpcApiGatewayStub < VpcApiGateway
     def initialize
       @ec2 = Aws::EC2::Client.new(stub_responses: true)
+      @stub = true
     end
   end
 end

@@ -24,6 +24,10 @@ module VPC
       vpc.gateway.create_route_public(destination_cidr_block,internet_gateway_id,@route_table_id)
     end
 
+    def create_vpn_route(vpc,destination_cidr_block,vpn_gateway_id)
+      vpc.gateway.create_route_vpn(destination_cidr_block,vpn_gateway_id,@route_table_id)
+    end
+
     def associate_route_table(vpc,route_table_id,subnet_id)
       @associate_route_table_ids << vpc.gateway.associate_route_table(route_table_id,subnet_id)
     end
