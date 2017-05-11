@@ -75,6 +75,9 @@ module VPC
     end
 
     def create_route
+      vpn_connection_id = @vpn_connection[0].vpn_connection_id
+      @gateway.wait_for_vpn_connection_available(vpn_connection_id)
+
       @config.private_route_tables.each do |v|
         name = v['CONFIG']['ROUTE_TABLE_TAGS'].first['NAME']['VALUE']
         destination_cidr_blocks = @config.get_vpn_gateway['DESTINATION_CIDR_BLOCKS']

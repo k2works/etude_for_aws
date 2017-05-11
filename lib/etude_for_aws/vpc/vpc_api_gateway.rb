@@ -7,6 +7,11 @@ module VPC
     def initialize
       aws_certificate
       @ec2 = Aws::EC2::Client.new
+      @stub = false
+    end
+
+    def stub?
+      @stub
     end
 
     def select_vpcs_by_name(name)
@@ -244,6 +249,11 @@ module VPC
                                  })
     end
 
+    def wait_for_vpn_connection_available(vpn_connection_id)
+      @ec2.wait_until(:vpn_connection_available, {vpn_connection_ids: [vpn_connection_id]}) unless stub?
+    end
+
+
     private
     def set_filter_tag_value(name)
       {
@@ -255,6 +265,7 @@ module VPC
   class VpcApiGatewayStub < VpcApiGateway
     def initialize
       @ec2 = Aws::EC2::Client.new(stub_responses: true)
+      @stub = true
     end
   end
 end
