@@ -17,6 +17,11 @@ package VPC {
     create()
     destroy()
   }
+  class VpnDirector {
+    + builder
+    create()
+    destroy()
+  }
 
   VpcApiGateway -u-> EC2::Client
   CertificationHelper <|-- VpcApiGateway
@@ -27,10 +32,17 @@ package VPC {
   Vpc "1" *-u- VpcApiGateway
   Vpc "1" *-r- "1..*" Subnet
   Vpc "1" *-r- "1" InternetGateway
-  Vpc "1" *-r- "1..*" RouteTable
+  Vpc "1" *-d- "1..*" RouteTable
   Vpc <|-- SimpleVpc
   Vpc <|-- StandardVpc
   VpcDirector *-r- Vpc
+  VpnDirector *-- Vpn
+  Vpn "1" *-- "1..*" CustomerGateway
+  Vpn "1" *-- "1" VpnGateway
+  Vpn "1" *-- "1..*" VpnConnection
+  Vpn "1" *-r- "1..*" RouteTable
+  Vpn "*" -u-> "1" Vpc
+
 
 }
 

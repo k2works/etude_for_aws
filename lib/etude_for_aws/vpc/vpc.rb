@@ -4,7 +4,8 @@ module VPC
 
     attr_reader :config,
                 :gateway,
-                :vpc_id
+                :vpc_id,
+                :vpn
 
     attr_accessor :subnets,
                   :public_subnets,

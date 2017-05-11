@@ -96,4 +96,8 @@ module ConfigurationHelper
   def get_yaml_ec2_instances
     ConfigurationHelper.load_yaml_file['DEV']['EC2']['INSTANCES']
   end
+
+  def get_yaml_vpn_info
+    ConfigurationHelper.load_yaml_file['DEV']['VPC']['VPN']
+  end
 end

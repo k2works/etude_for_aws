@@ -18,8 +18,8 @@ Interface ConfigurationHelper
 
 package EC2 {
   Interface VpcInterface
-  VpcInterface <|-- CFM::Vpc
-  VpcInterface <|-- VPC::Vpc
+  VpcInterface <|-r- CFM::Vpc
+  VpcInterface <|-l- VPC::Vpc
 
   class Ec2 {
     create()
@@ -28,12 +28,12 @@ package EC2 {
     stop()
     reboot()
   }
-  CertificationHelper <|-- Configuration
+  CertificationHelper <|-- Ec2ApiGateway
   ConfigurationHelper <|-- Configuration
-  Configuration -u-> EC2::Client
-  Configuration -u-> EC2::Resource
+  Ec2ApiGateway -u-> Aws
   Ec2 -r-> VpcInterface
-  Ec2 "1" *-l- "1" Configuration
+  Ec2 "1" *-u- "1" Configuration
+  Ec2 "1" *-u- "1" Ec2ApiGateway
   Ec2 "1" *-- "1..*" Ec2Instance
   Ec2 "1" *-- "1" KeyPair
   Ec2 "1" *-- "1" SecurityGroup
