@@ -29,6 +29,7 @@ AWS構築のための練習プログラム集
 
 ## 配置
 ### [CircleCI配置](./ops/ship_circleci.md)
+### [Jenkins配置](./ops/ship_jenkins.md)
 
 **[⬆ back to top](#構成)**
 
