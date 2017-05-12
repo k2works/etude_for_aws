@@ -8,3 +8,15 @@ test:
     - bundle
   override:
     - bundle exec rspec
+
+deployment:
+  rubygems:
+    branch: master
+    commands:
+      - curl -u $RUBYGEMS_USER:$RUBYGEMS_PASSWORD https://rubygems.org/api/v1/api_key.yaml > ~/.gem/credentials; chmod 0600 ~/.gem/credentials
+      - git config user.name $RUBYGEMS_USER
+      - git config user.email $RUBYGEMS_EMAIL
+      - bundle exec rake build
+      - git add .
+      - git commit -am 'Release Gem'
+      - bundle exec rake release
