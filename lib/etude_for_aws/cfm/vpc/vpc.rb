@@ -84,6 +84,12 @@ module CFM
   class VpcStub < Vpc
     include EC2::VpcInterface
 
+    def initialize
+      super
+      @config = ConfigurationStub.new
+      @cfm = @config.create_client
+    end
+
     def create
       p "#{self.class} Create Virtual Private Cloud"
       @config.stack_id = 'DUMMY'
