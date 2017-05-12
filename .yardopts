@@ -5,3 +5,6 @@ docs/dev/ec2/ec2.md
 docs/dev/vpc/vpc.md
 docs/ops/build_aws_sdk_repl.md
 docs/ops/run_rake_task.md
+docs/ops/ship_circleci.md
+docs/ops/ship_jenkins.md
+docs/ops/ship_ruby_gem.md
