@@ -121,7 +121,7 @@ module VPC
         info = {}
         info[:subnet_id] = public.subnet_id
         info[:network] = 'Public'
-        info[:az] = 'us-west-2a'
+        info[:az] = public.az
         infos << info
       end
 
@@ -129,7 +129,7 @@ module VPC
         info = {}
         info[:subnet_id] = private.subnet_id
         info[:network] = 'Private'
-        info[:az] = 'us-west-2a'
+        info[:az] = private.az
         infos << info
       end
 
