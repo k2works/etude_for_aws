@@ -1,4 +1,7 @@
 # Etude for AWS
+[![CircleCI](https://circleci.com/gh/k2works/etude_for_aws.svg?style=svg)](https://circleci.com/gh/k2works/etude_for_aws)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/k2works/etude_for_aws/LICENSE.txt)
+[![Gem Version](https://badge.fury.io/rb/etude_for_aws.svg)](https://badge.fury.io/rb/etude_for_aws)
 
 ## Quick Start
 Create`.env`
