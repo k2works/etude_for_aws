@@ -30,4 +30,10 @@ module CFM
       Aws::CloudFormation::Client.new
     end
   end
+
+  class ConfigurationStub < Configuration
+    def create_client
+      Aws::CloudFormation::Client.new(stub_responses: true)
+    end
+  end
 end
