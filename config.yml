@@ -34,7 +34,7 @@ DEV:
             SUBNET_CIDR_BLOCK:
               - '10.0.0.0/24'
             AZ:
-              - 'us-west-2a'
+              - 'ap-northeast-1b'
       PRIVATE:
         - CONFIG:
             SUBNET_TAGS:
@@ -44,7 +44,7 @@ DEV:
             SUBNET_CIDR_BLOCK:
               - '10.0.1.0/24'
             AZ:
-              - 'us-west-2a'
+              - 'ap-northeast-1b'
     ROUTE_TABLES:
       PUBLIC:
         - CONFIG:
@@ -105,7 +105,7 @@ DEV:
     SECURITY_GROUP_DESCRIPTION: 'Security group for MyGroovyInstance'
     KEY_PAIR_NAME: 'my-key-pair'
     KEY_PAIR_PATH: '/lib/etude_for_aws/ec2/'
-    IMAGE_ID: 'ami-4836a428'
+    IMAGE_ID: 'ami-923d12f5'
     INSTANCE_TYPE: 't2.micro'
     MIN_COUNT: '1'
     MAX_COUNT: '1'
