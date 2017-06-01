@@ -6,7 +6,14 @@
       "Default" : "ap-northeast-1a",
       "Description" : "AZ",
       "Type" : "String",
-      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c" ],
+      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c","us-east-1a","us-east-1b","us-east-1c","us-east-1d","us-east-1e" ],
+      "ConstraintDescription" : "must select a valid availability zone."
+    },
+    "AZ2" : {
+      "Default" : "ap-northeast-1c",
+      "Description" : "AZ",
+      "Type" : "String",
+      "AllowedValues" : [ "ap-northeast-1a","ap-northeast-1c","us-west-2a","us-west-2b","us-west-2c","us-east-1a","us-east-1b","us-east-1c","us-east-1d","us-east-1e" ],
       "ConstraintDescription" : "must select a valid availability zone."
     }
   },
@@ -18,7 +25,7 @@
       "Public-1a": {
         "CIDR": "10.0.0.0/24"
       },
-      "Public-2a": {
+      "Public-1c": {
         "CIDR": "10.0.1.0/24"
       }
     }
@@ -86,7 +93,7 @@
         }
       }
     },
-    "PublicSubnet2a": {
+    "PublicSubnet1c": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "VpcId": {
@@ -95,11 +102,11 @@
         "CidrBlock": {
           "Fn::FindInMap": [
             "SubnetConfig",
-            "Public-2a",
+            "Public-1c",
             "CIDR"
           ]
         },
-        "AvailabilityZone": {"Ref": "AZ1"},
+        "AvailabilityZone": {"Ref": "AZ2"},
         "Tags": [
           {
             "Key": "Application",
@@ -216,11 +223,11 @@
         }
       }
     },
-    "PublicSubnetRouteTableAssociation2a": {
+    "PublicSubnetRouteTableAssociation1c": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "SubnetId": {
-          "Ref": "PublicSubnet2a"
+          "Ref": "PublicSubnet1c"
         },
         "RouteTableId": {
           "Ref": "PublicRouteTable"
@@ -376,13 +383,18 @@
         "NetworkAclId": {
           "Ref": "PublicNetworkAcl"
         }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "de86ddc8-8415-41a5-a905-b1bda5ba3fed"
+        }
       }
     },
-    "PublicSubnetNetworkAclAssociation2a": {
+    "PublicSubnetNetworkAclAssociation1c": {
       "Type": "AWS::EC2::SubnetNetworkAclAssociation",
       "Properties": {
         "SubnetId": {
-          "Ref": "PublicSubnet2a"
+          "Ref": "PublicSubnet1c"
         },
         "NetworkAclId": {
           "Ref": "PublicNetworkAcl"
@@ -405,8 +417,8 @@
       "Description" : "PublicSubnet1"
     },
     "SUBNETPUB2" : {
-      "Value" : { "Ref" : "PublicSubnet2a" },
-      "Description" : "PublicSubnet2"
+      "Value" : { "Ref" : "PublicSubnet1c" },
+      "Description" : "PublicSubnet2 "
     }
   },
   "Metadata": {

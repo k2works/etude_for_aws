@@ -1,5 +1,5 @@
 DEV:
-  REGION: 'us-west-2'
+  REGION: 'us-east-1'
   CFM:
     VPC:
       STACK_NAME: 'VPCtestStack'
@@ -11,9 +11,9 @@ DEV:
       TEMPLATE_FILE_TYPE_05: 'vpc-2az-2subnet-pub.template'
       TEMPLATE_FILE_TYPE_06: 'vpc-2az-2subnet-pub-pri.template'
       TEMPLATE_FILE_TYPE_07: 'vpc-2az-4subnet-pub-pri.template'
-      TEMPLATE_PARAMS_AZ1: 'us-west-2a'
-      TEMPLATE_PARAMS_AZ2: 'us-west-2b'
-      TEMPLATE_PARAMS_AZ3: 'us-west-2c'
+      TEMPLATE_PARAMS_AZ1: 'us-east-1a'
+      TEMPLATE_PARAMS_AZ2: 'us-east-1b'
+      TEMPLATE_PARAMS_AZ3: 'us-east-1c'
       TAG_VALUE: 'test'
   VPC:
     VPC_TAGS:
@@ -34,7 +34,7 @@ DEV:
             SUBNET_CIDR_BLOCK:
               - '10.0.0.0/24'
             AZ:
-              - 'us-west-2a'
+              - 'us-east-1a'
       PRIVATE:
         - CONFIG:
             SUBNET_TAGS:
@@ -44,7 +44,7 @@ DEV:
             SUBNET_CIDR_BLOCK:
               - '10.0.1.0/24'
             AZ:
-              - 'us-west-2a'
+              - 'us-east-1a'
     ROUTE_TABLES:
       PUBLIC:
         - CONFIG:
@@ -105,7 +105,7 @@ DEV:
     SECURITY_GROUP_DESCRIPTION: 'Security group for MyGroovyInstance'
     KEY_PAIR_NAME: 'my-key-pair'
     KEY_PAIR_PATH: '/lib/etude_for_aws/ec2/'
-    IMAGE_ID: 'ami-4836a428'
+    IMAGE_ID: 'ami-c58c1dd3'
     INSTANCE_TYPE: 't2.micro'
     MIN_COUNT: '1'
     MAX_COUNT: '1'

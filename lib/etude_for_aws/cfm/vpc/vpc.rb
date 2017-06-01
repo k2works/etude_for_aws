@@ -50,7 +50,11 @@ module CFM
     end
 
     def get_vpc_id
-      @config.vpc_id
+      if @config.vpc_id.nil?
+        select_vpc_id
+      else
+        @config.vpc_id
+      end
     end
 
     def get_subnet_infos

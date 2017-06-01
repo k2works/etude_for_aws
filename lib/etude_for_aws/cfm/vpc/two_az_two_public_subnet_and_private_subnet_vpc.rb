@@ -18,6 +18,23 @@ module CFM
           },
       ]
     end
+
+
+    def get_subnet_info(logical_resource_id,az)
+      info = {}
+      info[:subnet_id] = @cfm.describe_stack_resource({stack_name: @config.stack_name, logical_resource_id: logical_resource_id}).stack_resource_detail.physical_resource_id
+      info[:az] = az
+      info
+    end
+
+    def get_subnet_infos
+      infos = []
+      infos << get_subnet_info('PublicSubnet1a',@config.azs[0])
+      infos << get_subnet_info('PublicSubnet1c',@config.azs[1])
+      infos << get_subnet_info('PrivateSubnet1a',@config.azs[0])
+      infos << get_subnet_info('PrivateSubnet1c',@config.azs[1])
+      infos
+    end
   end
 
   class TwoAzTwoPublicSubnetAndPrivateSubnetVpcStub < VpcStub
