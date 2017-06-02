@@ -2,10 +2,10 @@ module EC2
   class Ec2
     attr_reader :config,:gateway,:security_group,:key_pair,:ec2_instances
 
-    def initialize(vpc)
+    def initialize(vpc=nil)
       @config = Configuration.new
       @gateway = Ec2ApiGateway.new
-      setup_config(vpc)
+      setup_config(vpc) unless vpc.nil?
     end
 
     def create

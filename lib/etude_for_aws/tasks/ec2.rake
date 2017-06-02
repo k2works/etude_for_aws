@@ -198,9 +198,24 @@ namespace :EC2 do
     vpc.destroy
   end
 
+
+  desc 'キーペアを作成する'
+  task :create_key_pair do
+    ec2 = EC2::Ec2.new
+    key_pair = EC2::KeyPair.new(ec2)
+    key_pair.create
+  end
+
+  desc 'キーペアを削除する'
+  task :delete_key_pair do
+    ec2 = EC2::Ec2.new
+    key_pair = EC2::KeyPair.new(ec2)
+    key_pair.delete
+  end
+
   desc '作成したキーペアをコピーする'
   task :copy_key_pair do
-    yaml = YAML.load_file('config.yml')
+    yaml = YAML.load_file('aws_config.yml')
     key_pair_name = yaml['DEV']['EC2']['KEY_PAIR_NAME']
     path = Dir.pwd + yaml['DEV']['EC2']['KEY_PAIR_PATH']
     pem_file = path + "#{key_pair_name}.pem"
