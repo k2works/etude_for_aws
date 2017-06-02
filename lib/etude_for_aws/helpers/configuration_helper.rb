@@ -1,7 +1,7 @@
 require 'yaml'
 
 module ConfigurationHelper
-  YAML_FILE = 'config.yml'
+  YAML_FILE = 'aws_config.yml'
 
   def self.load_yaml_file
     YAML.load_file(YAML_FILE)
